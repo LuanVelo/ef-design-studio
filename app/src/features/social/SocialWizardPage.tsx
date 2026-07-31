@@ -14,6 +14,7 @@ import type { ProjectRecord, TemplateRecord } from '@data/types'
 import { newerVersionOf } from '@features/manager/template-actions'
 import { TemplateSelectorModal } from '@features/manager/TemplateSelectorModal'
 import { SocialContentStep } from './SocialContentStep'
+import { SocialExportStep } from './SocialExportStep'
 import { saveSocialProject, socialDataOf, type SocialProjectData } from './social-project'
 
 const STEPS = [
@@ -209,13 +210,22 @@ export function SocialWizardPage() {
       ) : null}
 
       {step === 4 ? (
-        <Card bordered className="flex flex-col gap-3 p-6">
-          <h2 className="text-lg font-semibold tracking-tight">Exportar</h2>
-          <p className="text-sm text-ink-muted">O export PNG/JPG/zip chega na etapa F3.3.</p>
-          <PillButton variant="ghost" onClick={() => void save({ step: 3 })}>
-            ← Conteúdo
-          </PillButton>
-        </Card>
+        template?.manifest && validation?.ok ? (
+          <SocialExportStep
+            project={project}
+            template={template}
+            validation={validation}
+            resourceUrls={resourceUrls}
+            data={data}
+            onBack={() => save({ step: 3 })}
+            onFinalized={(updated) => {
+              setProject(updated)
+              setSavedAt(updated.updatedAt)
+            }}
+          />
+        ) : (
+          <p className="py-12 text-center text-sm text-ink-muted">Abrindo o template…</p>
+        )
       ) : null}
 
       <TemplateSelectorModal

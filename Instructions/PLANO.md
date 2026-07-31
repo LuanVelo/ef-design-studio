@@ -126,11 +126,11 @@
 - **Aceite:** ✅ verificado no navegador com o fixture social: texto/richtext/variant/cor ao vivo; override de título por formato persiste após reload; carousel 2→3 páginas com conteúdo por página; imagem 3000px comprimida para 2560px webp; mobile empilhado (preview primeiro). Lógica de merge/páginas com testes vitest. (Teste em celular físico: fazer no aceite da F3.3 junto com Web Share.)
 
 ### F3.3 Etapa 4: export
-- [ ] PNG/JPG, @1x/@2x; todos os formatos de uma vez em `.zip` com nomes `<projeto>-<formato>-<página>.png`; carousel numerado.
-- [ ] Web Share API no mobile quando disponível; registro em `exports_history`.
-- [ ] Medir: peça @2x em <5s (RNF-1); marcar projeto `finalizado`.
-- **Aceite:** zip com todos os formatos abre correto; tempos dentro do RNF.
-- **Fechar decisão §12.4:** qualidade JPG exposta ou fixa em 90.
+- [x] PNG/JPG, @1x/@2x; todos os formatos de uma vez em `.zip` com nomes `<projeto>-<formato>-<página>.<ext>` (carousel numerado; arquivo único baixa direto); pipeline em `src/export/social-export.ts` reusando o motor F1.3 (iframe fora da tela + captura).
+- [x] Web Share API quando `navigator.canShare({files})`; registro em `exports_history` (um por formato); guard com mensagem clara quando a aba está oculta (html-to-image não rasteriza em página hidden — F1.3).
+- [x] Medição por peça + total exibida na UI com selo do RNF (<5s @2x); projeto marcado `finalizado` após export.
+- **Aceite:** ⚠️ parcialmente verificado — plano/nomes (testes + navegador: 5 arquivos p/ stories+feed+carousel×3), render+injeção dos iframes de export ok, guard de aba oculta ok; captura @2x já medida na F1.3 (~170ms/peça). **Pendente com aba visível/celular real:** rodar o export completo (zip abre + tempos) e Web Share — painel do navegador estava oculto na sessão.
+- **Decisão §12.4 fechada:** qualidade JPG **fixa em 90** (constante `JPG_QUALITY`), sem controle exposto na v1.
 
 ---
 
