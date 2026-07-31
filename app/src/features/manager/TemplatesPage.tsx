@@ -61,6 +61,7 @@ export function TemplatesPage() {
   const [dropError, setDropError] = useState<string | null>(null)
   const [filters, setFilters] = useState<TemplateFilters>(EMPTY_FILTERS)
   const [sort, setSort] = useState<TemplateSort>('recentes')
+  const [view, setView] = useState<'ativos' | 'arquivados'>('ativos')
 
   const reload = useCallback(async () => {
     if (!user) return
@@ -103,9 +104,18 @@ export function TemplatesPage() {
     setPendingFile(file)
   }
 
-  // Grid mostra a versão mais alta de cada template; arquivados ficam para a aba própria (F2.4)
+  // Grid mostra a versão mais alta de cada template; aba separa ativos × arquivados
   const active = useMemo(
-    () => latestPerManifestId((templates ?? []).filter((t) => t.status !== 'arquivado')),
+    () =>
+      latestPerManifestId(
+        (templates ?? []).filter((t) =>
+          view === 'arquivados' ? t.status === 'arquivado' : t.status !== 'arquivado',
+        ),
+      ),
+    [templates, view],
+  )
+  const archivedCount = useMemo(
+    () => latestPerManifestId((templates ?? []).filter((t) => t.status === 'arquivado')).length,
     [templates],
   )
   const tags = useMemo(() => allTags(active), [active])
@@ -119,8 +129,8 @@ export function TemplatesPage() {
     filters.tag !== null ||
     filters.status !== 'todos'
   const recents = useMemo(
-    () => (hasActiveFilters ? [] : recentTemplates(active)),
-    [active, hasActiveFilters],
+    () => (hasActiveFilters || view === 'arquivados' ? [] : recentTemplates(active)),
+    [active, hasActiveFilters, view],
   )
 
   if (!user) return null
@@ -152,7 +162,7 @@ export function TemplatesPage() {
 
       {templates === null ? (
         <p className="py-24 text-center text-sm text-ink-muted">Carregando templates…</p>
-      ) : active.length === 0 && !hasActiveFilters ? (
+      ) : templates.length === 0 ? (
         <EmptyState
           illustration={<GlassFolderIllustration />}
           headline="Seus templates moram aqui"
@@ -166,7 +176,23 @@ export function TemplatesPage() {
       ) : (
         <div className="flex flex-col gap-6 pt-6">
           <div className="flex flex-wrap items-center justify-between gap-4">
-            <h1 className="text-2xl font-bold tracking-tight">Templates</h1>
+            <div className="flex items-center gap-4">
+              <h1 className="text-2xl font-bold tracking-tight">Templates</h1>
+              <div className="flex gap-1" role="group" aria-label="Ativos ou arquivados">
+                {(['ativos', 'arquivados'] as const).map((v) => (
+                  <button
+                    key={v}
+                    type="button"
+                    onClick={() => setView(v)}
+                    className={`cursor-pointer rounded-full px-3 py-1.5 text-xs font-medium transition-colors ${
+                      view === v ? 'bg-ink text-white' : 'bg-ink/5 text-ink hover:bg-ink/10'
+                    }`}
+                  >
+                    {v === 'ativos' ? 'Ativos' : `Arquivados${archivedCount ? ` (${archivedCount})` : ''}`}
+                  </button>
+                ))}
+              </div>
+            </div>
             {importButton}
           </div>
 
@@ -252,7 +278,9 @@ export function TemplatesPage() {
 
           {filtered.length === 0 ? (
             <p className="py-16 text-center text-sm text-ink-muted">
-              Nenhum template corresponde aos filtros.
+              {view === 'arquivados' && !hasActiveFilters
+                ? 'Nenhum template arquivado.'
+                : 'Nenhum template corresponde aos filtros.'}
             </p>
           ) : (
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">

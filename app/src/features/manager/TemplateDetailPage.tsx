@@ -4,6 +4,9 @@ import DOMPurify from 'dompurify'
 import { marked } from 'marked'
 import { Badge } from '@components/Badge'
 import { Card } from '@components/Card'
+import { Modal } from '@components/Modal'
+import { PillButton } from '@components/PillButton'
+import { useDevice } from '@components/useDevice'
 import { useSession } from '@auth/session'
 import {
   createResourceUrls,
@@ -15,8 +18,14 @@ import {
 import { validateEftpl, type EftplValidationResult } from '@core/validate/eftpl'
 import { templatesRepo } from '@data/repositories'
 import type { TemplateRecord } from '@data/types'
-import { compareSemver } from './import-service'
-import { formatDateCaps, isRecent } from './template-meta'
+import {
+  archiveTemplate,
+  deleteTemplate,
+  duplicateTemplate,
+  exportTemplate,
+  unarchiveTemplate,
+} from './template-actions'
+import { compareSemver, formatDateCaps, isRecent } from './template-meta'
 
 /**
  * Detalhe do template (RF-G2): preview navegável de formatos/variants com o
@@ -33,6 +42,13 @@ export function TemplateDetailPage() {
   const [formatKey, setFormatKey] = useState<string | null>(null)
   const [variant, setVariant] = useState<string | null>(null)
   const [testImage] = useState(makeTestImage)
+  const device = useDevice()
+  const readOnly = device === 'celular'
+  // Exclusão: fluxo com confirmação dupla; 'bloqueada' quando há projetos vinculados
+  const [deleteStage, setDeleteStage] = useState<
+    null | { kind: 'confirmar-1' } | { kind: 'confirmar-2' } | { kind: 'bloqueada'; projectCount: number }
+  >(null)
+  const [actionError, setActionError] = useState<string | null>(null)
 
   // Carrega o registro + histórico de versões do mesmo manifestId
   useEffect(() => {
@@ -127,6 +143,59 @@ export function TemplateDetailPage() {
         {record.status !== 'arquivado' && isRecent(record) ? <Badge kind="recente" /> : null}
         <span className="text-meta text-ink-muted">v{record.version}</span>
       </div>
+
+      {readOnly ? null : (
+        <div className="flex flex-wrap items-center gap-2" data-testid="template-actions">
+          <PillButton
+            variant="ghost"
+            onClick={() => {
+              void (async () => {
+                try {
+                  const updated =
+                    record.status === 'arquivado'
+                      ? await unarchiveTemplate(record.id)
+                      : await archiveTemplate(record.id)
+                  setRecord(updated)
+                } catch (err) {
+                  setActionError((err as Error).message)
+                }
+              })()
+            }}
+          >
+            {record.status === 'arquivado' ? 'Desarquivar' : 'Arquivar'}
+          </PillButton>
+          <PillButton
+            variant="ghost"
+            onClick={() => {
+              void exportTemplate(record).catch((err: Error) => setActionError(err.message))
+            }}
+          >
+            Exportar .eftpl
+          </PillButton>
+          <PillButton
+            variant="ghost"
+            onClick={() => {
+              void duplicateTemplate(record)
+                .then((copy) => navigate(`/templates/${copy.id}`))
+                .catch((err: Error) => setActionError(err.message))
+            }}
+          >
+            Duplicar
+          </PillButton>
+          <PillButton
+            variant="ghost"
+            className="!border-red-200 !text-red-700 hover:!bg-red-50"
+            onClick={() => setDeleteStage({ kind: 'confirmar-1' })}
+          >
+            Excluir
+          </PillButton>
+          {actionError ? (
+            <span className="text-sm text-red-700" role="alert">
+              {actionError}
+            </span>
+          ) : null}
+        </div>
+      )}
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1fr_320px]">
         {/* Preview */}
@@ -251,6 +320,87 @@ export function TemplateDetailPage() {
           />
         </Card>
       ) : null}
+
+      <Modal
+        open={deleteStage !== null}
+        onClose={() => setDeleteStage(null)}
+        title="Excluir template"
+        maxWidth="max-w-md"
+      >
+        {deleteStage?.kind === 'confirmar-1' ? (
+          <div className="flex flex-col gap-4" data-testid="delete-step-1">
+            <p className="text-sm">
+              Excluir <span className="font-semibold">{record.name}</span> (v{record.version})
+              definitivamente? O pacote será removido do seu navegador.
+            </p>
+            <div className="flex justify-end gap-2">
+              <PillButton variant="ghost" onClick={() => setDeleteStage(null)}>
+                Cancelar
+              </PillButton>
+              <PillButton onClick={() => setDeleteStage({ kind: 'confirmar-2' })}>
+                Continuar
+              </PillButton>
+            </div>
+          </div>
+        ) : null}
+        {deleteStage?.kind === 'confirmar-2' ? (
+          <div className="flex flex-col gap-4" data-testid="delete-step-2">
+            <p className="text-sm">
+              Esta ação <span className="font-semibold">não pode ser desfeita</span>. Confirmar a
+              exclusão definitiva?
+            </p>
+            <div className="flex justify-end gap-2">
+              <PillButton variant="ghost" onClick={() => setDeleteStage(null)}>
+                Cancelar
+              </PillButton>
+              <PillButton
+                className="!bg-red-700 hover:!bg-red-800"
+                onClick={() => {
+                  void (async () => {
+                    try {
+                      const result = await deleteTemplate(record)
+                      if (result.blocked) {
+                        setDeleteStage({ kind: 'bloqueada', projectCount: result.projectCount })
+                      } else {
+                        navigate('/templates')
+                      }
+                    } catch (err) {
+                      setActionError((err as Error).message)
+                      setDeleteStage(null)
+                    }
+                  })()
+                }}
+              >
+                Excluir definitivamente
+              </PillButton>
+            </div>
+          </div>
+        ) : null}
+        {deleteStage?.kind === 'bloqueada' ? (
+          <div className="flex flex-col gap-4" data-testid="delete-blocked">
+            <p className="text-sm">
+              Este template não pode ser excluído: {deleteStage.projectCount}{' '}
+              {deleteStage.projectCount === 1 ? 'projeto usa' : 'projetos usam'} ele. Você pode
+              arquivá-lo — ele some do gerenciador, mas os projetos continuam funcionando.
+            </p>
+            <div className="flex justify-end gap-2">
+              <PillButton variant="ghost" onClick={() => setDeleteStage(null)}>
+                Cancelar
+              </PillButton>
+              <PillButton
+                onClick={() => {
+                  void archiveTemplate(record.id).then((updated) => {
+                    setRecord(updated)
+                    setDeleteStage(null)
+                  })
+                }}
+              >
+                Arquivar template
+              </PillButton>
+            </div>
+          </div>
+        ) : null}
+      </Modal>
     </div>
   )
 }

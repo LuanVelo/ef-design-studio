@@ -1,5 +1,15 @@
 import type { TemplateRecord } from '@data/types'
 
+/** Compara versões semver x.y.z. Retorna <0, 0 ou >0 (ordem natural). */
+export function compareSemver(a: string, b: string): number {
+  const pa = a.split('.').map(Number)
+  const pb = b.split('.').map(Number)
+  for (let i = 0; i < 3; i++) {
+    if ((pa[i] ?? 0) !== (pb[i] ?? 0)) return (pa[i] ?? 0) - (pb[i] ?? 0)
+  }
+  return 0
+}
+
 const MONTHS = ['JAN', 'FEV', 'MAR', 'ABR', 'MAI', 'JUN', 'JUL', 'AGO', 'SET', 'OUT', 'NOV', 'DEZ']
 
 /** Data em caps pequenas com tracking largo (padrão R5): "31 JUL 2026" */

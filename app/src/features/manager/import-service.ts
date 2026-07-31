@@ -1,16 +1,10 @@
 import { validateEftpl, type EftplValidationResult } from '@core/validate/eftpl'
 import { templatesRepo } from '@data/repositories'
 import type { TemplateRecord } from '@data/types'
+import { nextCopyManifestId } from './template-actions'
+import { compareSemver } from './template-meta'
 
-/** Compara versões semver x.y.z. Retorna <0, 0 ou >0 (ordem natural). */
-export function compareSemver(a: string, b: string): number {
-  const pa = a.split('.').map(Number)
-  const pb = b.split('.').map(Number)
-  for (let i = 0; i < 3; i++) {
-    if ((pa[i] ?? 0) !== (pb[i] ?? 0)) return (pa[i] ?? 0) - (pb[i] ?? 0)
-  }
-  return 0
-}
+export { compareSemver }
 
 export type ImportConflict = {
   /** Versões já instaladas com o mesmo manifestId, mais recente primeiro */
@@ -50,15 +44,6 @@ export async function analyzeEftpl(
     }
   }
   return { bytes, validation, conflict }
-}
-
-/** Gera um manifestId livre para cópia: <id>-copia, <id>-copia-2, ... */
-async function nextCopyManifestId(ownerUserId: string, baseId: string): Promise<string> {
-  for (let n = 1; ; n++) {
-    const candidate = n === 1 ? `${baseId}-copia` : `${baseId}-copia-${n}`
-    const existing = await templatesRepo.listByManifestId(ownerUserId, candidate)
-    if (existing.length === 0) return candidate
-  }
 }
 
 /**

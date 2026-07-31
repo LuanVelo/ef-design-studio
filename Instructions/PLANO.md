@@ -97,10 +97,10 @@
 - **Aceite:** ✅ verificado no navegador: social 4 formatos, slides 12 variants, pdf 2 variants + page-number automático; README com as 6 seções fixas renderizado.
 
 ### F2.4 Gestão: status, versões, export (RF-G3/G4/G5/G7)
-- [ ] Arquivar/desarquivar; aba Arquivados; exclusão definitiva com confirmação dupla, bloqueada se houver projetos vinculados (oferecer arquivar).
-- [ ] Versionamento: reimportar mesmo `id` com versão maior = nova versão; projetos apontam para a versão original com aviso "versão mais nova disponível".
-- [ ] Exportar `.eftpl` (baixa o `packageBlob`); duplicar template (novo `id`, marca origem).
-- **Aceite:** ciclo completo importar→usar→arquivar→nova versão→exportar sem perda.
+- [x] Arquivar/desarquivar; aba Arquivados (com contagem); exclusão definitiva com confirmação dupla, bloqueada se houver projetos vinculados fora da lixeira (oferece arquivar no lugar).
+- [x] Versionamento: reimportar mesmo `id` com versão maior = nova versão (registro novo, mesmo manifestId); helper `newerVersionOf()` pronto para o aviso "versão mais nova disponível" nos projetos (UI chega com projetos na F3/F4).
+- [x] Exportar `.eftpl` (baixa `packageBytes` via fs-adapter, nome `<id>-v<versão>.eftpl`); duplicar template (manifestId derivado `-copia[-n]`, origem marcada, status novo, contadores zerados).
+- **Aceite:** ✅ ciclo completo verificado no navegador: importar → usar (uso simulado) → arquivar/desarquivar → nova versão v1.1.0 (radio pré-selecionado, histórico com 2 versões) → duplicar → excluir com dupla confirmação → exclusão bloqueada por projeto vinculado oferecendo arquivar. Export coberto por teste unitário (fs-adapter mockado).
 
 ### F2.5 Gerador de prompt (RF-G6)
 - [ ] Formulário (categoria, formatos, descrição do design, slots) → prompt completo com a spec do `.eftpl` embutida + link mental para os fixtures como exemplo → botão copiar.
