@@ -168,7 +168,7 @@ Template = HTML+CSS autocontido renderizado em **iframe sandboxed** (`sandbox="a
 
 | Fase | Entrega | Status |
 |---|---|---|
-| F0 | Fundação: scaffold, Dexie, login local, PWA, deploy | ✅ concluída (deploy público pendente) |
+| F0 | Fundação: scaffold, Dexie, login local, PWA, deploy | ✅ concluída |
 | F1 | Contrato: schemas zod, validador, motor de render, templates fixture | ⬅️ atual |
 | F2 | Gerenciador de templates | pendente |
 | F3 | Social (wizard + export + mobile) | pendente |

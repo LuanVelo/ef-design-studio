@@ -39,8 +39,9 @@
 
 ### F0.5 PWA + deploy
 - [x] vite-plugin-pwa: manifest (nome placeholder "EF Design Studio", ícones estética R7 em `public/icons/`), service worker cacheando app shell (verificado: SW ativo + 19 entradas em precache no preview).
-- [ ] Repositório GitHub + GitHub Actions: push na `main` → build → deploy no Pages. (Workflow pronto em `.github/workflows/deploy.yml`; falta criar o repo remoto — depende de autorização do usuário.)
-- [ ] Testar instalação como app no Chrome/Edge e funcionamento offline após 1º load. (SW/precache verificados localmente; teste de instalação fica com o usuário na URL pública.)
+- [x] Repositório GitHub + GitHub Actions: push na `main` → build → deploy no Pages. Repo: https://github.com/LuanVelo/ef-design-studio · URL: https://luanvelo.github.io/ef-design-studio/
+- [x] Funcionamento offline após 1º load verificado (SW ativo + app shell em precache). Instalação como app no Chrome/Edge: testar manualmente na URL pública.
+- [x] **Extra:** versionamento semântico — versão única no `package.json` (v0.0.1), exibida na UI (login + rodapé), `npm run release:patch|minor|major`, GitHub Release automática em tags `v*`.
 - **Aceite:** URL pública funcionando; app instala e abre offline.
 - **Fechar decisão §12.1:** nome final do produto (necessário para manifest/ícone definitivos — pode ficar placeholder até F5).
 
@@ -186,7 +187,7 @@
 
 | Fase | Status | Data |
 |---|---|---|
-| F0 | concluída (deploy público pendente de repo GitHub) | 30/07/2026 |
+| F0 | concluída — app público em https://luanvelo.github.io/ef-design-studio/ | 30/07/2026 |
 | F1 | não iniciada | — |
 | F2 | não iniciada | — |
 | F3 | não iniciada | — |
