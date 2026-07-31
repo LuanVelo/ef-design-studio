@@ -38,7 +38,7 @@ describe('App shell e rotas', () => {
   it.each([
     ['/templates', /seus templates moram aqui/i],
     ['/social', /peça social/i],
-    ['/slides', /slides & pdf/i],
+    ['/slides', /da ideia ao pdf/i],
   ])('renderiza %s', async (path, heading) => {
     renderAt(path)
     expect(await screen.findByRole('heading', { level: 1 })).toHaveTextContent(heading)
@@ -57,7 +57,7 @@ describe('App shell e rotas', () => {
       /seus templates moram aqui/i,
     )
     await user.click(screen.getByRole('link', { name: 'Slides & PDF' }))
-    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(/slides & pdf/i)
+    expect(await screen.findByRole('heading', { level: 1 })).toHaveTextContent(/da ideia ao pdf/i)
   })
 
   it('login não usa o shell (sem topbar)', async () => {

@@ -137,10 +137,10 @@
 ## F4 — Slides + PDF
 
 ### F4.1 Entrada: template, formato, conteúdo
-- [ ] Etapa 1–2: seletor (modal R8, `category: slides` ou `pdf`) + formato; bloqueio em celular com aviso (RF-SL3).
-- [ ] Upload de `content.json` **ou** Markdown (parser H1/H2→pages) **ou** começar em branco; botão "Copiar prompt para IA" com schema + slots do template.
-- [ ] Matching: slots casados preenchidos; sobras → painel "Conteúdo não mapeado"; obrigatórios vazios sinalizados.
-- **Aceite:** importar `content.json` e Markdown dos fixtures; conteúdo não-mapeado aparece no painel e pode ser arrastado para um slot.
+- [x] Etapa 1–2: seletor (modal R8 agora multi-categoria: `slides`+`pdf`) + escolha de formato (direto quando o template só tem um); bloqueio em celular com aviso (RF-SL3) na lista e no editor.
+- [x] Upload de `content.json` **ou** Markdown (parser H1/H2 = novo slide com título, corpo = texto, `-` = bullets) **ou** começar em branco; botão "Copiar prompt para IA" com o Contrato 2 + slots/variants/limites do template embutidos; projeto renomeado com o título do documento.
+- [x] Matching: keys casadas preenchem slots (variant sugerida validada contra as options, default como fallback; imagens nunca vêm do documento); sobras → painel "Conteúdo não mapeado" com drag para qualquer campo de slide; obrigatórios vazios sinalizados por slide.
+- **Aceite:** ✅ verificado no navegador: content.json do fixture casa 100% com o editorial (6 slides, projeto renomeado); Markdown gera 4 slides + 3 não mapeados; drag de item não mapeado preencheu o slot `destaque` (preview atualizou e persistiu após reload); bloqueio mobile ok. Parser/matching com testes vitest sobre os fixtures reais.
 
 ### F4.2 Editor on-screen
 - [ ] Filmstrip lateral: miniaturas (motor de render @baixa escala), reordenar drag, duplicar, excluir, adicionar com escolha de variant.

@@ -7,6 +7,7 @@ import { TemplateDetailPage } from '@features/manager/TemplateDetailPage'
 import { SocialPage } from '@features/social/SocialPage'
 import { SocialWizardPage } from '@features/social/SocialWizardPage'
 import { SlidesPage } from '@features/slides/SlidesPage'
+import { SlidesEditorPage } from '@features/slides/SlidesEditorPage'
 import { LoginPage } from '@auth/LoginPage'
 import { RenderHarnessPage } from '@features/dev/RenderHarnessPage'
 
@@ -24,6 +25,7 @@ function App() {
           <Route path="/social" element={<SocialPage />} />
           <Route path="/social/:projectId" element={<SocialWizardPage />} />
           <Route path="/slides" element={<SlidesPage />} />
+          <Route path="/slides/:projectId" element={<SlidesEditorPage />} />
         </Route>
       </Route>
     </Routes>

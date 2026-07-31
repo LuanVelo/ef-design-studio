@@ -75,7 +75,7 @@ export function SocialPage() {
       <TemplateSelectorModal
         open={selectorOpen}
         onClose={() => setSelectorOpen(false)}
-        category="social"
+        categories={['social']}
         onSelect={(template) => {
           setSelectorOpen(false)
           void createSocialProject(template).then((project) => navigate(`/social/${project.id}`))

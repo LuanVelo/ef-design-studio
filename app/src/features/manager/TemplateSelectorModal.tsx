@@ -21,7 +21,8 @@ const STATUS_ITEMS: { value: TemplateStatusFilter; label: string }[] = [
 type TemplateSelectorModalProps = {
   open: boolean
   onClose: () => void
-  category: TemplateCategory
+  /** Categorias elegíveis (ex.: ['social'] no fluxo social, ['slides','pdf'] no de slides) */
+  categories: TemplateCategory[]
   /** Chamado ao escolher um template elegível */
   onSelect: (template: TemplateRecord) => void
   /** Conteúdo do bloco de ajuda no rodapé da sidebar */
@@ -36,7 +37,7 @@ type TemplateSelectorModalProps = {
 export function TemplateSelectorModal({
   open,
   onClose,
-  category,
+  categories,
   onSelect,
   helpText,
 }: TemplateSelectorModalProps) {
@@ -57,10 +58,10 @@ export function TemplateSelectorModal({
   const eligible = useMemo(
     () =>
       filterTemplates(
-        (templates ?? []).filter((t) => t.category === category),
+        (templates ?? []).filter((t) => categories.includes(t.category)),
         { ...EMPTY_FILTERS, search, status },
       ).sort((a, b) => (b.lastUsedAt ?? b.createdAt).localeCompare(a.lastUsedAt ?? a.createdAt)),
-    [templates, category, search, status],
+    [templates, categories, search, status],
   )
 
   useEffect(() => {
@@ -139,7 +140,7 @@ export function TemplateSelectorModal({
               <p className="py-16 text-center text-sm text-ink-muted">Carregando…</p>
             ) : eligible.length === 0 ? (
               <p className="py-16 text-center text-sm text-ink-muted">
-                Nenhum template {category} disponível. Importe um .eftpl no gerenciador.
+                Nenhum template {categories.join('/')} disponível. Importe um .eftpl no gerenciador.
               </p>
             ) : (
               <div className="grid grid-cols-2 gap-4 md:grid-cols-3">

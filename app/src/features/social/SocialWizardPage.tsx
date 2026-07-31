@@ -231,7 +231,7 @@ export function SocialWizardPage() {
       <TemplateSelectorModal
         open={selectorOpen}
         onClose={() => setSelectorOpen(false)}
-        category="social"
+        categories={['social']}
         onSelect={(t) => {
           setSelectorOpen(false)
           setTemplate(t)
