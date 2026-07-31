@@ -438,7 +438,7 @@ Cada fase termina com o app utilizável de ponta a ponta no que já existe (nada
 
 1. Nome final do produto (placeholder: **EF Design Studio**).
 2. Identidade visual da UI do app (a pasta `design/` deve receber as referências).
-3. Lista definitiva de tags/categorias de organização dos templates.
+3. ~~Lista definitiva de tags/categorias de organização dos templates.~~ **Fechada (F2.5):** categorias fixas social/slides/pdf; tags canônicas em `prompt-generator.ts` — estilo (minimalista, bold, editorial, elegante, corporativo, divertido, retro), tema (produto, promocao, evento, institucional, educativo, relatorio, proposta, portfolio), tom (claro, escuro, colorido).
 4. Se export JPG terá controle de qualidade exposto ou fixo em 90.
 5. Limites exatos do carousel (min 2 / max 10 é o default do Instagram — confirmar).
 

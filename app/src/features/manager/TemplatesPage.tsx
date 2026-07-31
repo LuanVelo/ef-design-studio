@@ -9,6 +9,7 @@ import { templatesRepo } from '@data/repositories'
 import type { TemplateRecord } from '@data/types'
 import { GlassFolderIllustration } from './GlassFolderIllustration'
 import { ImportTemplateDialog } from './ImportTemplateDialog'
+import { PromptGeneratorDialog } from './PromptGeneratorDialog'
 import { TemplateCard } from './TemplateCard'
 import {
   allTags,
@@ -62,6 +63,7 @@ export function TemplatesPage() {
   const [filters, setFilters] = useState<TemplateFilters>(EMPTY_FILTERS)
   const [sort, setSort] = useState<TemplateSort>('recentes')
   const [view, setView] = useState<'ativos' | 'arquivados'>('ativos')
+  const [promptOpen, setPromptOpen] = useState(false)
 
   const reload = useCallback(async () => {
     if (!user) return
@@ -136,9 +138,14 @@ export function TemplatesPage() {
   if (!user) return null
 
   const importButton = readOnly ? null : (
-    <PillButton onClick={() => void pickFile()} data-testid="import-button">
-      Importar template (.eftpl)
-    </PillButton>
+    <div className="flex flex-wrap items-center gap-2">
+      <PillButton variant="ghost" onClick={() => setPromptOpen(true)} data-testid="prompt-button">
+        Gerar com IA
+      </PillButton>
+      <PillButton onClick={() => void pickFile()} data-testid="import-button">
+        Importar template (.eftpl)
+      </PillButton>
+    </div>
   )
 
   return (
@@ -313,6 +320,7 @@ export function TemplatesPage() {
           void reload()
         }}
       />
+      <PromptGeneratorDialog open={promptOpen} onClose={() => setPromptOpen(false)} />
     </div>
   )
 }

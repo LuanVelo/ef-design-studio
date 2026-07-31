@@ -103,9 +103,9 @@
 - **Aceite:** ✅ ciclo completo verificado no navegador: importar → usar (uso simulado) → arquivar/desarquivar → nova versão v1.1.0 (radio pré-selecionado, histórico com 2 versões) → duplicar → excluir com dupla confirmação → exclusão bloqueada por projeto vinculado oferecendo arquivar. Export coberto por teste unitário (fs-adapter mockado).
 
 ### F2.5 Gerador de prompt (RF-G6)
-- [ ] Formulário (categoria, formatos, descrição do design, slots) → prompt completo com a spec do `.eftpl` embutida + link mental para os fixtures como exemplo → botão copiar.
-- **Aceite:** colar o prompt gerado no Claude, receber um `.eftpl`, importar com sucesso (teste real de ida e volta).
-- **Fechar decisão §12.3:** lista definitiva de tags/categorias.
+- [x] Formulário (nome, categoria, formatos canônicos, descrição do design, slots, tags) → prompt completo com a spec do `.eftpl` embutida (estrutura do zip, manifest, regras duras de layout, seções do README) → botão copiar (clipboard).
+- **Aceite:** ✅ ida e volta real: prompt gerado pela UI → pacote `ef-aviso-interno-01.eftpl` produzido pelo Claude seguindo só o prompt → importado sem nenhum erro e renderizando (variants ok).
+- **Decisão §12.3 fechada:** categorias fixas social/slides/pdf; tags canônicas em 3 grupos — estilo (minimalista, bold, editorial, elegante, corporativo, divertido, retro), tema (produto, promocao, evento, institucional, educativo, relatorio, proposta, portfolio), tom (claro, escuro, colorido). Fonte: `prompt-generator.ts` (CANONICAL_TAGS).
 
 ---
 
@@ -189,7 +189,7 @@
 |---|---|---|
 | F0 | concluída — app público em https://luanvelo.github.io/ef-design-studio/ | 30/07/2026 |
 | F1 | concluída (tag f1-done) | 30/07/2026 |
-| F2 | não iniciada | — |
+| F2 | concluída (tag f2-done) | 31/07/2026 |
 | F3 | não iniciada | — |
 | F4 | não iniciada | — |
 | F5 | não iniciada | — |
