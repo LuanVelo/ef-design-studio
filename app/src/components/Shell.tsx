@@ -13,6 +13,9 @@ export function Shell() {
         <main className="flex-1 px-6 pb-8 sm:px-8">
           <Outlet />
         </main>
+        <footer className="flex justify-end px-6 pb-3 sm:px-8">
+          <span className="text-meta text-ink-muted">v{__APP_VERSION__}</span>
+        </footer>
       </div>
     </div>
   )

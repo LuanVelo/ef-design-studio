@@ -120,8 +120,12 @@ export function LoginPage() {
           ) : null}
         </div>
 
+        <p className="mt-6 text-center">
+          <span className="text-meta text-ink-muted">EF Design Studio v{__APP_VERSION__}</span>
+        </p>
+
         {mode === 'criar' ? (
-          <p className="mt-8 rounded-xl bg-surface px-4 py-3 text-xs leading-relaxed text-ink-muted">
+          <p className="mt-2 rounded-xl bg-surface px-4 py-3 text-xs leading-relaxed text-ink-muted">
             <strong className="text-ink">Sobre a segurança:</strong> este login protege seus
             projetos de olhares casuais em um computador compartilhado, mas os dados ficam no
             navegador e podem ser acessados por quem tem acesso total a esta máquina. Não use uma

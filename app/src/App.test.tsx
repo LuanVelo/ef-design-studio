@@ -31,6 +31,8 @@ describe('App shell e rotas', () => {
     renderAt('/')
     expect(screen.getByText('EF Design Studio')).toBeInTheDocument()
     expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(/peças de design/i)
+    // versão do app visível no rodapé do shell
+    expect(screen.getByText(/^v\d+\.\d+\.\d+$/)).toBeInTheDocument()
   })
 
   it.each([
