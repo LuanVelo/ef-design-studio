@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState, type DragEvent } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { EmptyState } from '@components/EmptyState'
 import { PillButton } from '@components/PillButton'
 import { useDevice } from '@components/useDevice'
@@ -51,6 +52,7 @@ const selectClass =
 
 export function TemplatesPage() {
   const user = useSession((s) => s.user)
+  const navigate = useNavigate()
   const device = useDevice()
   const readOnly = device === 'celular'
   const [templates, setTemplates] = useState<TemplateRecord[] | null>(null)
@@ -241,7 +243,7 @@ export function TemplatesPage() {
               <h2 className="text-meta font-semibold text-ink-muted uppercase">Recentes</h2>
               <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                 {recents.map((t) => (
-                  <TemplateCard key={t.id} template={t} />
+                  <TemplateCard key={t.id} template={t} onOpen={(tpl) => navigate(`/templates/${tpl.id}`)} />
                 ))}
               </div>
               <h2 className="text-meta mt-2 font-semibold text-ink-muted uppercase">Todos</h2>
@@ -255,7 +257,7 @@ export function TemplatesPage() {
           ) : (
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
               {filtered.map((t) => (
-                <TemplateCard key={t.id} template={t} />
+                <TemplateCard key={t.id} template={t} onOpen={(tpl) => navigate(`/templates/${tpl.id}`)} />
               ))}
             </div>
           )}

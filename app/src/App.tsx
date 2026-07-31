@@ -3,6 +3,7 @@ import { RequireAuth } from '@auth/RequireAuth'
 import { Shell } from '@components/Shell'
 import { HomePage } from '@features/home/HomePage'
 import { TemplatesPage } from '@features/manager/TemplatesPage'
+import { TemplateDetailPage } from '@features/manager/TemplateDetailPage'
 import { SocialPage } from '@features/social/SocialPage'
 import { SlidesPage } from '@features/slides/SlidesPage'
 import { LoginPage } from '@auth/LoginPage'
@@ -18,6 +19,7 @@ function App() {
         <Route element={<Shell />}>
           <Route path="/" element={<HomePage />} />
           <Route path="/templates" element={<TemplatesPage />} />
+          <Route path="/templates/:id" element={<TemplateDetailPage />} />
           <Route path="/social" element={<SocialPage />} />
           <Route path="/slides" element={<SlidesPage />} />
         </Route>

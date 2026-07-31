@@ -93,8 +93,8 @@
 - **Aceite:** ✅ verificado no navegador com 6 templates (fixtures + cópias): busca, 3 filtros e 4 ordenações; mobile (<768px) esconde importação e mostra aviso somente leitura. Lógica pura em `template-filters.ts` com testes vitest.
 
 ### F2.3 Detalhe do template (RF-G2)
-- [ ] Preview navegável de todos os formatos e variants (usando o motor F1.3), README renderizado, metadados, histórico de versões.
-- **Aceite:** navegar por todos os formatos/variants dos 3 fixtures.
+- [x] Preview navegável de todos os formatos e variants (usando o motor F1.3 com conteúdo de amostra compartilhado em `core/render/sample.ts`), README renderizado (marked + DOMPurify), metadados, histórico de versões (mesma manifestId, semver desc, navegável).
+- **Aceite:** ✅ verificado no navegador: social 4 formatos, slides 12 variants, pdf 2 variants + page-number automático; README com as 6 seções fixas renderizado.
 
 ### F2.4 Gestão: status, versões, export (RF-G3/G4/G5/G7)
 - [ ] Arquivar/desarquivar; aba Arquivados; exclusão definitiva com confirmação dupla, bloqueada se houver projetos vinculados (oferecer arquivar).

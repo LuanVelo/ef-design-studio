@@ -39,10 +39,10 @@ function err(code: string, message: string): ValidationIssue {
  * `instanceof` interno do JSZip; um Uint8Array construído aqui não.)
  */
 function toZipInput(data: ArrayBuffer | Uint8Array | Blob): Uint8Array | Blob {
-  if (typeof Blob !== 'undefined' && data instanceof Blob) return data
   if (ArrayBuffer.isView(data)) {
     return new Uint8Array(data.buffer, data.byteOffset, data.byteLength)
   }
+  if (data instanceof Blob) return data
   return new Uint8Array(data)
 }
 
