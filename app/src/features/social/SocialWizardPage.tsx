@@ -1,15 +1,19 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { Badge } from '@components/Badge'
 import { Card } from '@components/Card'
 import { PillButton } from '@components/PillButton'
+import { useDevice } from '@components/useDevice'
 import { useObjectUrl } from '@components/useObjectUrl'
 import { useSession } from '@auth/session'
+import { createResourceUrls } from '@core/render'
+import { validateEftpl, type EftplValidationResult } from '@core/validate/eftpl'
 import { nowIso } from '@data/repository'
 import { projectsRepo, templatesRepo } from '@data/repositories'
 import type { ProjectRecord, TemplateRecord } from '@data/types'
 import { newerVersionOf } from '@features/manager/template-actions'
 import { TemplateSelectorModal } from '@features/manager/TemplateSelectorModal'
+import { SocialContentStep } from './SocialContentStep'
 import { saveSocialProject, socialDataOf, type SocialProjectData } from './social-project'
 
 const STEPS = [
@@ -29,6 +33,20 @@ export function SocialWizardPage() {
   const [selectorOpen, setSelectorOpen] = useState(false)
   const [savedAt, setSavedAt] = useState<string | null>(null)
   const [nameDraft, setNameDraft] = useState<string | null>(null)
+  const [validation, setValidation] = useState<EftplValidationResult | null>(null)
+  const [resourceUrls, setResourceUrls] = useState<Record<string, string>>({})
+  const device = useDevice()
+  const persistTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const pendingRef = useRef<ProjectRecord | null>(null)
+
+  // Flush do autosave pendente ao sair da página
+  useEffect(
+    () => () => {
+      if (persistTimer.current) clearTimeout(persistTimer.current)
+      if (pendingRef.current) void saveSocialProject(pendingRef.current, {})
+    },
+    [],
+  )
 
   useEffect(() => {
     if (!projectId || !user) return
@@ -45,15 +63,40 @@ export function SocialWizardPage() {
     })()
   }, [projectId, user])
 
-  // Autosave (RF-S2): toda mudança persiste e atualiza o indicador
-  async function save(
+  // Abre o pacote para o preview da etapa 3 (motor único de render)
+  useEffect(() => {
+    if (!template?.packageBytes) return
+    let revoke: (() => void) | undefined
+    void (async () => {
+      const result = await validateEftpl(template.packageBytes!)
+      setValidation(result)
+      if (result.ok) {
+        const resources = createResourceUrls(result.binaries)
+        revoke = resources.revoke
+        setResourceUrls(resources.urls)
+      }
+    })()
+    return () => revoke?.()
+  }, [template])
+
+  // Autosave (RF-S2): estado atualiza na hora; persistência com debounce curto
+  function save(
     patch: Partial<SocialProjectData>,
     meta: { name?: string; templateId?: string } = {},
   ) {
     if (!project || project === 'nao-encontrado') return
-    const updated = await saveSocialProject(project, patch, meta)
-    setProject(updated)
-    setSavedAt(updated.updatedAt)
+    const optimistic: ProjectRecord = {
+      ...project,
+      ...meta,
+      data: { ...socialDataOf(project), ...patch },
+    }
+    setProject(optimistic)
+    pendingRef.current = optimistic
+    if (persistTimer.current) clearTimeout(persistTimer.current)
+    persistTimer.current = setTimeout(() => {
+      pendingRef.current = null
+      void saveSocialProject(optimistic, {}, meta).then((saved) => setSavedAt(saved.updatedAt))
+    }, 400)
   }
 
   if (!user) return null
@@ -149,18 +192,20 @@ export function SocialWizardPage() {
       ) : null}
 
       {step === 3 ? (
-        <Card bordered className="flex flex-col gap-3 p-6">
-          <h2 className="text-lg font-semibold tracking-tight">Conteúdo</h2>
-          <p className="text-sm text-ink-muted">
-            O formulário de conteúdo com preview ao vivo chega na etapa F3.2.
-          </p>
-          <div className="flex gap-2">
-            <PillButton variant="ghost" onClick={() => void save({ step: 2 })}>
-              ← Formatos
-            </PillButton>
-            <PillButton onClick={() => void save({ step: 4 })}>Exportar →</PillButton>
-          </div>
-        </Card>
+        template?.manifest && validation?.ok ? (
+          <SocialContentStep
+            template={template}
+            validation={validation}
+            resourceUrls={resourceUrls}
+            data={data}
+            onChange={(patch) => save(patch)}
+            device={device}
+            onBack={() => save({ step: 2 })}
+            onNext={() => save({ step: 4 })}
+          />
+        ) : (
+          <p className="py-12 text-center text-sm text-ink-muted">Abrindo o template…</p>
+        )
       ) : null}
 
       {step === 4 ? (

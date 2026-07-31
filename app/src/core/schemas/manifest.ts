@@ -17,6 +17,8 @@ export const EditableColorSchema = z.object({
   default: z.string().regex(/^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$/),
 })
 
+export type EditableColor = z.infer<typeof EditableColorSchema>
+
 export const TemplateManifestSchema = z
   .object({
     schemaVersion: z.literal(1),

@@ -1,11 +1,21 @@
+import type { SlotValue } from '@core/schemas'
 import { projectsRepo, templatesRepo } from '@data/repositories'
 import type { ProjectRecord, TemplateRecord } from '@data/types'
 import { nowIso } from '@data/repository'
 
-/**
- * Dados do projeto social persistidos em ProjectRecord.data.
- * O conteúdo dos slots entra na F3.2; aqui vive a estrutura do wizard.
- */
+/** Conteúdo de uma peça/página: valores por slot + variant + cores + imagens (dataURL). */
+export type SocialContent = {
+  values: Record<string, SlotValue>
+  variant?: string
+  colors: Record<string, string>
+  images: Record<string, string>
+}
+
+export function emptyContent(): SocialContent {
+  return { values: {}, colors: {}, images: {} }
+}
+
+/** Dados do projeto social persistidos em ProjectRecord.data. */
 export type SocialProjectData = {
   schemaVersion: 1
   kind: 'social'
@@ -13,10 +23,88 @@ export type SocialProjectData = {
   formatKeys: string[]
   /** Etapa atual do wizard (1–4) para retomada */
   step: number
+  /** Conteúdo compartilhado entre todos os formatos */
+  content: SocialContent
+  /** Overrides por formato (campo fixado sobrescreve o compartilhado) */
+  overrides: Record<string, Partial<SocialContent>>
+  /** Páginas por formato multi (carousel); cada página sobrepõe o compartilhado */
+  pages: Record<string, SocialContent[]>
 }
 
 export function emptySocialData(): SocialProjectData {
-  return { schemaVersion: 1, kind: 'social', formatKeys: [], step: 2 }
+  return {
+    schemaVersion: 1,
+    kind: 'social',
+    formatKeys: [],
+    step: 2,
+    content: emptyContent(),
+    overrides: {},
+    pages: {},
+  }
+}
+
+/**
+ * Conteúdo efetivo de um formato: compartilhado ← override do formato ← página
+ * (quando multi). Merge por slot (valores individuais sobrescrevem).
+ */
+export function effectiveContent(
+  data: SocialProjectData,
+  formatKey: string,
+  pageIndex?: number,
+): SocialContent {
+  const ov = data.overrides[formatKey] ?? {}
+  const base: SocialContent = {
+    values: { ...data.content.values, ...ov.values },
+    variant: ov.variant ?? data.content.variant,
+    colors: { ...data.content.colors, ...ov.colors },
+    images: { ...data.content.images, ...ov.images },
+  }
+  const page = pageIndex != null ? data.pages[formatKey]?.[pageIndex] : undefined
+  if (!page) return base
+  return {
+    values: { ...base.values, ...page.values },
+    variant: page.variant ?? base.variant,
+    colors: { ...base.colors, ...page.colors },
+    images: { ...base.images, ...page.images },
+  }
+}
+
+/** Operações do gerenciador de páginas do carousel (imutáveis). */
+export function pagesOf(data: SocialProjectData, formatKey: string): SocialContent[] {
+  return data.pages[formatKey] ?? []
+}
+
+export function withPages(
+  data: SocialProjectData,
+  formatKey: string,
+  pages: SocialContent[],
+): Pick<SocialProjectData, 'pages'> {
+  return { pages: { ...data.pages, [formatKey]: pages } }
+}
+
+export function addPage(data: SocialProjectData, formatKey: string) {
+  return withPages(data, formatKey, [...pagesOf(data, formatKey), emptyContent()])
+}
+
+export function duplicatePage(data: SocialProjectData, formatKey: string, index: number) {
+  const pages = pagesOf(data, formatKey)
+  const copy = structuredClone(pages[index]) ?? emptyContent()
+  return withPages(data, formatKey, [...pages.slice(0, index + 1), copy, ...pages.slice(index + 1)])
+}
+
+export function removePage(data: SocialProjectData, formatKey: string, index: number) {
+  const pages = pagesOf(data, formatKey)
+  return withPages(data, formatKey, pages.filter((_, i) => i !== index))
+}
+
+export function movePage(data: SocialProjectData, formatKey: string, from: number, to: number) {
+  const pages = [...pagesOf(data, formatKey)]
+  if (from < 0 || from >= pages.length || to < 0 || to >= pages.length) {
+    return withPages(data, formatKey, pages)
+  }
+  const [moved] = pages.splice(from, 1)
+  pages.splice(to, 0, moved)
+  return withPages(data, formatKey, pages)
 }
 
 export function socialDataOf(project: ProjectRecord): SocialProjectData {

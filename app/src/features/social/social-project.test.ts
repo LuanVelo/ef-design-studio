@@ -2,9 +2,15 @@ import { db } from '@data/db'
 import { projectsRepo, templatesRepo } from '@data/repositories'
 import type { TemplateRecord } from '@data/types'
 import {
+  addPage,
   createSocialProject,
+  duplicatePage,
+  effectiveContent,
+  emptySocialData,
   listSocialProjects,
+  movePage,
   relativeTime,
+  removePage,
   saveSocialProject,
   socialDataOf,
 } from './social-project'
@@ -81,6 +87,60 @@ describe('F3.1 — projeto social', () => {
     await saveSocialProject(project, { step: 4, formatKeys: ['stories', 'feed-square'] })
     const [resumed] = await listSocialProjects(OWNER)
     expect(socialDataOf(resumed)).toMatchObject({ step: 4, formatKeys: ['stories', 'feed-square'] })
+  })
+})
+
+describe('F3.2 — conteúdo efetivo (compartilhado ← override ← página)', () => {
+  function dataWith(): ReturnType<typeof emptySocialData> {
+    const d = emptySocialData()
+    d.content = {
+      values: { titulo: 'Compartilhado', sub: 'Sub' },
+      variant: 'a',
+      colors: { destaque: '#111111' },
+      images: { hero: 'data:img-shared' },
+    }
+    d.overrides = { stories: { values: { titulo: 'Só stories' }, variant: 'b' } }
+    d.pages = {
+      'carousel-square': [
+        { values: { titulo: 'Página 1' }, colors: {}, images: {} },
+        { values: {}, colors: {}, images: { hero: 'data:img-p2' } },
+      ],
+    }
+    return d
+  }
+
+  it('override por formato sobrescreve só os campos fixados', () => {
+    const d = dataWith()
+    const stories = effectiveContent(d, 'stories')
+    expect(stories.values).toMatchObject({ titulo: 'Só stories', sub: 'Sub' })
+    expect(stories.variant).toBe('b')
+    const feed = effectiveContent(d, 'feed-square')
+    expect(feed.values.titulo).toBe('Compartilhado')
+    expect(feed.variant).toBe('a')
+  })
+
+  it('página do carousel sobrepõe o compartilhado por slot', () => {
+    const d = dataWith()
+    const p1 = effectiveContent(d, 'carousel-square', 0)
+    expect(p1.values).toMatchObject({ titulo: 'Página 1', sub: 'Sub' })
+    expect(p1.images.hero).toBe('data:img-shared')
+    const p2 = effectiveContent(d, 'carousel-square', 1)
+    expect(p2.values.titulo).toBe('Compartilhado')
+    expect(p2.images.hero).toBe('data:img-p2')
+  })
+
+  it('gerenciador de páginas: add/duplicar/mover/excluir imutáveis', () => {
+    let d = { ...dataWith(), ...addPage(dataWith(), 'carousel-square') }
+    expect(d.pages['carousel-square']).toHaveLength(3)
+    d = { ...d, ...duplicatePage(d, 'carousel-square', 0) }
+    expect(d.pages['carousel-square'][1].values.titulo).toBe('Página 1')
+    d = { ...d, ...movePage(d, 'carousel-square', 3, 0) }
+    expect(d.pages['carousel-square']).toHaveLength(4)
+    d = { ...d, ...removePage(d, 'carousel-square', 0) }
+    expect(d.pages['carousel-square']).toHaveLength(3)
+    // fora dos limites não quebra
+    d = { ...d, ...movePage(d, 'carousel-square', 10, 0) }
+    expect(d.pages['carousel-square']).toHaveLength(3)
   })
 })
 

@@ -119,11 +119,11 @@
 - **Aceite:** ✅ verificado no navegador: criar projeto → selecionar formatos → recarregar o app → retomar de "Meus projetos" na etapa e com os formatos salvos. Testes vitest de criação/autosave/listagem/retomada.
 
 ### F3.2 Etapa 3: conteúdo + preview
-- [ ] Formulário gerado dos slots do manifest (componente por tipo de slot: text com contador de chars, richtext restrito, upload de imagem com compressão máx 2560px/webp, variant, color, list).
-- [ ] Preview ao vivo (debounce ≤300ms) lado a lado com tabs por formato; conteúdo compartilhado entre formatos + overrides por formato.
-- [ ] Carousel: gerenciador de páginas (adicionar/duplicar/reordenar drag/excluir, min/max do template).
-- [ ] Layout mobile: empilhado (preview acima, form abaixo), upload da galeria (RF-S3).
-- **Aceite:** preencher os fixtures em desktop e celular real; overrides por formato persistem.
+- [x] Formulário gerado dos slots do manifest (componente por tipo em `SlotFields.tsx`: text com contador, richtext restrito com botões B/I, upload de imagem via fs-adapter com compressão 2560px/webp q0.85, variant, color, list com maxItems).
+- [x] Preview ao vivo (debounce 250ms) lado a lado com tabs por formato; conteúdo compartilhado + override por campo/formato (pin "por formato" copia o valor atual; despinar volta ao compartilhado).
+- [x] Carousel: gerenciador de páginas (mínimo do template auto-criado; adicionar/duplicar/reordenar drag/excluir respeitando min/max); página sobrepõe o compartilhado por slot.
+- [x] Layout mobile: empilhado (preview acima, form abaixo); autosave com debounce 400ms + flush ao sair.
+- **Aceite:** ✅ verificado no navegador com o fixture social: texto/richtext/variant/cor ao vivo; override de título por formato persiste após reload; carousel 2→3 páginas com conteúdo por página; imagem 3000px comprimida para 2560px webp; mobile empilhado (preview primeiro). Lógica de merge/páginas com testes vitest. (Teste em celular físico: fazer no aceite da F3.3 junto com Web Share.)
 
 ### F3.3 Etapa 4: export
 - [ ] PNG/JPG, @1x/@2x; todos os formatos de uma vez em `.zip` com nomes `<projeto>-<formato>-<página>.png`; carousel numerado.
