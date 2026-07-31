@@ -1,0 +1,127 @@
+{
+  "schemaVersion": 1,
+  "id": "ef-slides-editorial-01",
+  "name": "Slides Editorial",
+  "category": "slides",
+  "version": "1.0.0",
+  "author": "Claude",
+  "createdWith": "claude-fable-5",
+  "description": "Template de apresentação institucional em estilo editorial: margens generosas, tipografia serena (Roboto + Figtree) e 12 variações de layout — capas, transição, colunas de texto e composições com imagem.",
+  "tags": ["editorial", "institucional", "corporativo", "claro", "16x9"],
+  "formats": [
+    {
+      "key": "slide-16x9",
+      "file": "layouts/slide-16x9.html",
+      "width": 1920,
+      "height": 1080,
+      "pages": "multi"
+    }
+  ],
+  "slots": [
+    {
+      "key": "layout-variant",
+      "type": "variant",
+      "label": "Variação de layout",
+      "options": [
+        "capa-imagem",
+        "capa-lisa",
+        "transicao",
+        "duas-colunas-img-direita",
+        "duas-colunas-img-esquerda",
+        "duas-colunas-img-direita-cheia",
+        "duas-colunas-img-esquerda-cheia",
+        "img-grande-esquerda",
+        "img-grande-direita",
+        "tres-colunas",
+        "uma-coluna",
+        "texto-destaque"
+      ],
+      "default": "duas-colunas-img-direita"
+    },
+    {
+      "key": "titulo",
+      "type": "text",
+      "label": "Título da seção (caixa alta)",
+      "required": false,
+      "maxChars": 40,
+      "multiline": false
+    },
+    {
+      "key": "menu",
+      "type": "list",
+      "label": "Menu / breadcrumb (itens curtos)",
+      "required": false,
+      "maxItems": 4,
+      "itemMaxChars": 20
+    },
+    {
+      "key": "destaque",
+      "type": "richtext",
+      "label": "Parágrafo de destaque (negrito)",
+      "required": false,
+      "maxChars": 220,
+      "multiline": true
+    },
+    {
+      "key": "texto-1",
+      "type": "richtext",
+      "label": "Coluna de texto 1",
+      "required": false,
+      "maxChars": 360,
+      "multiline": true
+    },
+    {
+      "key": "texto-2",
+      "type": "richtext",
+      "label": "Coluna de texto 2",
+      "required": false,
+      "maxChars": 360,
+      "multiline": true
+    },
+    {
+      "key": "texto-3",
+      "type": "richtext",
+      "label": "Coluna de texto 3",
+      "required": false,
+      "maxChars": 360,
+      "multiline": true
+    },
+    {
+      "key": "destaque-grande",
+      "type": "richtext",
+      "label": "Frase grande (48px)",
+      "required": false,
+      "maxChars": 300,
+      "multiline": true
+    },
+    {
+      "key": "titulo-grande",
+      "type": "richtext",
+      "label": "Título grande de capa/transição (72px)",
+      "required": false,
+      "maxChars": 200,
+      "multiline": true
+    },
+    {
+      "key": "imagem",
+      "type": "image",
+      "label": "Imagem",
+      "required": false,
+      "aspectHint": "livre",
+      "fit": "cover"
+    }
+  ],
+  "fonts": [
+    { "family": "Roboto", "file": "fonts/roboto-var.woff2", "license": "OFL" },
+    { "family": "Figtree", "file": "fonts/figtree-var.woff2", "license": "OFL" }
+  ],
+  "colors": {
+    "editable": [
+      { "key": "cor-texto", "label": "Cor do texto", "default": "#412321" },
+      { "key": "cor-fundo", "label": "Cor de fundo", "default": "#ffffff" },
+      { "key": "cor-fundo-imagem", "label": "Fundo da moldura de imagem", "default": "#ebebeb" },
+      { "key": "cor-fundo-capa", "label": "Fundo da capa lisa", "default": "#c4c4c4" },
+      { "key": "cor-overlay", "label": "Cor do overlay da transição", "default": "#01233c" }
+    ]
+  }
+}

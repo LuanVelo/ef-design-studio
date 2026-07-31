@@ -6,11 +6,14 @@ import { TemplatesPage } from '@features/manager/TemplatesPage'
 import { SocialPage } from '@features/social/SocialPage'
 import { SlidesPage } from '@features/slides/SlidesPage'
 import { LoginPage } from '@auth/LoginPage'
+import { RenderHarnessPage } from '@features/dev/RenderHarnessPage'
 
 function App() {
   return (
     <Routes>
       <Route path="/login" element={<LoginPage />} />
+      {/* Harness de dev do motor de render (sem link na navegação) */}
+      <Route path="/dev/render" element={<RenderHarnessPage />} />
       <Route element={<RequireAuth />}>
         <Route element={<Shell />}>
           <Route path="/" element={<HomePage />} />

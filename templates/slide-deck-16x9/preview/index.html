@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Preview — Slides Editorial (12 variants)</title>
+<style>
+  :root { color-scheme: light dark; }
+  * { box-sizing: border-box; margin: 0; }
+  body {
+    font-family: system-ui, sans-serif;
+    background: #1e1e22;
+    color: #eee;
+    display: flex;
+    height: 100vh;
+    overflow: hidden;
+  }
+  aside {
+    width: 280px;
+    flex-shrink: 0;
+    overflow-y: auto;
+    background: #26262b;
+    padding: 16px;
+  }
+  aside h1 { font-size: 14px; text-transform: uppercase; letter-spacing: 1px; color: #999; margin-bottom: 12px; }
+  aside button {
+    display: block;
+    width: 100%;
+    text-align: left;
+    padding: 8px 10px;
+    margin-bottom: 4px;
+    background: transparent;
+    color: #ddd;
+    border: 1px solid transparent;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 13px;
+  }
+  aside button:hover { background: #333; }
+  aside button.active { background: #3a3a44; border-color: #666; }
+  aside label { display: flex; gap: 8px; align-items: center; font-size: 13px; margin: 16px 0 8px; color: #bbb; }
+  main { flex: 1; display: flex; align-items: center; justify-content: center; overflow: auto; padding: 24px; }
+  #stage { position: relative; }
+  #stage iframe {
+    width: 1920px;
+    height: 1080px;
+    border: 0;
+    background: #fff;
+    transform-origin: top left;
+    display: block;
+    box-shadow: 0 8px 40px rgba(0,0,0,.5);
+  }
+  #grid {
+    display: none;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    padding: 24px;
+    overflow-y: auto;
+    width: 100%;
+    height: 100%;
+  }
+  #grid .cell { cursor: pointer; }
+  #grid .cell .thumb { position: relative; width: 100%; aspect-ratio: 16/9; overflow: hidden; border-radius: 4px; }
+  #grid .cell iframe { width: 1920px; height: 1080px; border: 0; transform-origin: top left; pointer-events: none; background: #fff; }
+  #grid .cell p { font-size: 12px; color: #aaa; margin-top: 6px; text-align: center; }
+  body.grid-mode main { display: none; }
+  body.grid-mode #grid { display: grid; }
+</style>
+</head>
+<body>
+<aside>
+  <h1>Slides Editorial</h1>
+  <button data-mode="grid">▦ Ver todos (grade)</button>
+  <hr style="border-color:#333;margin:10px 0">
+  <div id="variant-buttons"></div>
+  <label><input type="checkbox" id="chk-limite"> Texto no limite de caracteres</label>
+  <label><input type="checkbox" id="chk-vazio"> Slots opcionais vazios</label>
+  <label><input type="checkbox" id="chk-img"> Sem imagem (placeholder)</label>
+</aside>
+<main><div id="stage"><iframe id="frame" src="../layouts/slide-16x9.html"></iframe></div></main>
+<div id="grid"></div>
+
+<script>
+const VARIANTS = [
+  "capa-imagem", "capa-lisa", "transicao",
+  "duas-colunas-img-direita", "duas-colunas-img-esquerda",
+  "duas-colunas-img-direita-cheia", "duas-colunas-img-esquerda-cheia",
+  "img-grande-esquerda", "img-grande-direita",
+  "tres-colunas", "uma-coluna", "texto-destaque"
+];
+
+const LOREM = (n) => "Lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore magna aliqua ut enim ad minim veniam quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat duis aute irure dolor in reprehenderit voluptate velit esse cillum".slice(0, n);
+
+const SAMPLE = {
+  "titulo": "Atuação",
+  "menu": ["Introdução", "Estratégia", "Proposta"],
+  "destaque": "As sócias do escritório trazem em seus currículos atuações expressivas em processos criminais emblemáticos, tendo alcançado importantes resultados nos últimos anos, fruto de uma advocacia combativa e de excelência.",
+  "texto-1": ["Essa atuação é pautada pelo rígido controle dos andamentos processuais, pela agilidade na adoção das medidas necessárias à proteção dos interesses de seus clientes e pelo contínuo cuidado com a pesquisa dos mais modernos posicionamentos doutrinários.", "Os serviços abrangem todo e qualquer assunto de natureza criminal, em caráter consultivo e contencioso."],
+  "texto-2": ["No âmbito contencioso, o trabalho se expande por todo o território nacional e também em diversas causas com reflexos transnacionais, por meio de extensa rede de escritórios parceiros e de advogados correspondentes.", "A assessoria consultiva compreende a elaboração de pareceres, estudos de caso e políticas de compliance."],
+  "texto-3": ["Enim in dignissim amet eu sit facilisis in. Orci viverra egestas etiam pharetra morbi nulla elit ultricies imperdiet.", "Quam quis nisl aliquam tellus mattis. Id tincidunt ipsum pulvinar accumsan fermentum faucibus ultricies elit non donec feugiat augue."],
+  "destaque-grande": "Empresas dos setores naval e de óleo & gás operam em um ambiente em que o risco penal não é eventual - ele é estrutural. A combinação entre complexidade operacional, regulação intensa e impacto potencial das atividades faz com que decisões rotineiras carreguem exposição relevante.",
+  "titulo-grande": "Riscos penais na operação: como proteger a empresa antes que o problema apareça.",
+  "imagem": "samples/sample-solid.png"
+};
+
+const OVERRIDES = {
+  "capa-imagem": {
+    "imagem": "samples/sample-light.png"
+  },
+  "texto-destaque": {
+    "titulo": "Abertura",
+    "destaque-grande": "Empresas dos setores naval e de óleo & gás operam em um ambiente em que o risco penal não é eventual",
+    "texto-1": "Empresas dos setores naval e de óleo & gás operam em um ambiente em que o risco penal não é eventual - ele é estrutural. A combinação entre complexidade operacional, regulação intensa e impacto potencial das atividades faz com que <strong>decisões rotineiras carreguem exposição relevante.</strong>"
+  },
+  "transicao": {
+    "titulo-grande": "O risco já está na operação. <b>A questão é quando ele aparece.</b>"
+  },
+  "img-grande-esquerda": {
+    "texto-1": ["Empresas tomam decisões diariamente que carregam risco penal, muitas vezes sem qualquer percepção disso no momento em que são tomadas. Esse risco não depende da intenção de errar, mas das consequências jurídicas dentro de um ambiente regulado e complexo."]
+  },
+  "img-grande-direita": {
+    "texto-1": ["Empresas tomam decisões diariamente que carregam risco penal, muitas vezes sem qualquer percepção disso no momento em que são tomadas. Esse risco não depende da intenção de errar, mas das consequências jurídicas dentro de um ambiente regulado e complexo."]
+  }
+};
+
+const LIMITE = {
+  "titulo": "Título de seção no limite máximo!!",
+  "menu": ["Item bem comprido 1", "Item bem comprido 2", "Item bem comprido 3", "Item bem comprido 4"],
+  "destaque": LOREM(240),
+  "texto-1": [LOREM(300), LOREM(280)],
+  "texto-2": [LOREM(300), LOREM(280)],
+  "texto-3": [LOREM(300), LOREM(280)],
+  "destaque-grande": LOREM(300),
+  "titulo-grande": LOREM(200),
+  "imagem": "samples/sample-solid.png"
+};
+
+// Injeta conteúdo num documento de layout — espelha o que o motor do app fará
+function inject(doc, variant, opts) {
+  const root = doc.querySelector(".slide");
+  root.className = "slide variant-" + variant;
+  const data = opts.limite ? { ...LIMITE } : { ...SAMPLE, ...(OVERRIDES[variant] || {}) };
+
+  for (const [key, value] of Object.entries(data)) {
+    const el = doc.querySelector('[data-slot="' + key + '"]');
+    if (!el) continue;
+    el.innerHTML = "";
+    if (opts.vazio && ["menu", "texto-2", "texto-3", "destaque"].includes(key)) continue;
+    if (key === "imagem") {
+      if (!opts.semImagem) {
+        const img = doc.createElement("img");
+        img.src = new URL(value, location.href).href;
+        el.appendChild(img);
+      }
+    } else if (key === "menu") {
+      value.forEach(t => { const s = doc.createElement("span"); s.textContent = t; el.appendChild(s); });
+    } else if (Array.isArray(value)) {
+      value.forEach(t => { const p = doc.createElement("p"); p.textContent = t; el.appendChild(p); });
+    } else {
+      el.innerHTML = value; // richtext (b/strong apenas)
+    }
+  }
+}
+
+// --- Estado / UI ---
+const params = new URLSearchParams(location.search);
+const BARE = params.get("bare") === "1";
+let current = VARIANTS.includes(params.get("variant")) ? params.get("variant") : VARIANTS[3];
+if (BARE) {
+  document.querySelector("aside").style.display = "none";
+  document.querySelector("main").style.padding = "0";
+  document.body.style.background = "#fff";
+}
+if (params.get("limite") === "1") document.getElementById("chk-limite").checked = true;
+if (params.get("vazio") === "1") document.getElementById("chk-vazio").checked = true;
+if (params.get("semimg") === "1") document.getElementById("chk-img").checked = true;
+const frame = document.getElementById("frame");
+const stage = document.getElementById("stage");
+const btnBox = document.getElementById("variant-buttons");
+
+function opts() {
+  return {
+    limite: document.getElementById("chk-limite").checked,
+    vazio: document.getElementById("chk-vazio").checked,
+    semImagem: document.getElementById("chk-img").checked
+  };
+}
+
+function fitStage() {
+  if (BARE) frame.style.boxShadow = "none";
+  const scale = BARE
+    ? Math.min(innerWidth / 1920, innerHeight / 1080)
+    : Math.min((innerWidth - 330) / 1920, (innerHeight - 50) / 1080);
+  frame.style.transform = "scale(" + scale + ")";
+  stage.style.width = 1920 * scale + "px";
+  stage.style.height = 1080 * scale + "px";
+}
+
+function render() {
+  document.body.classList.remove("grid-mode");
+  const doc = frame.contentDocument;
+  if (doc && doc.querySelector(".slide")) inject(doc, current, opts());
+  document.querySelectorAll("#variant-buttons button").forEach(b =>
+    b.classList.toggle("active", b.dataset.v === current));
+  fitStage();
+}
+
+VARIANTS.forEach(v => {
+  const b = document.createElement("button");
+  b.textContent = v;
+  b.dataset.v = v;
+  b.onclick = () => { current = v; render(); };
+  btnBox.appendChild(b);
+});
+
+document.querySelector('[data-mode="grid"]').onclick = buildGrid;
+["chk-limite", "chk-vazio", "chk-img"].forEach(id =>
+  document.getElementById(id).onchange = () =>
+    document.body.classList.contains("grid-mode") ? buildGrid() : render());
+
+frame.addEventListener("load", render);
+addEventListener("resize", fitStage);
+
+function buildGrid() {
+  document.body.classList.add("grid-mode");
+  const grid = document.getElementById("grid");
+  grid.innerHTML = "";
+  VARIANTS.forEach(v => {
+    const cell = document.createElement("div");
+    cell.className = "cell";
+    const thumb = document.createElement("div");
+    thumb.className = "thumb";
+    const f = document.createElement("iframe");
+    f.src = "../layouts/slide-16x9.html";
+    f.addEventListener("load", () => {
+      inject(f.contentDocument, v, opts());
+      const scale = thumb.clientWidth / 1920;
+      f.style.transform = "scale(" + scale + ")";
+    });
+    thumb.appendChild(f);
+    const label = document.createElement("p");
+    label.textContent = v;
+    cell.appendChild(thumb);
+    cell.appendChild(label);
+    cell.onclick = () => { current = v; render(); };
+    grid.appendChild(cell);
+  });
+}
+</script>
+</body>
+</html>

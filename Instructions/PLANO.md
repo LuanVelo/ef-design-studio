@@ -50,21 +50,21 @@
 ## F1 — Contrato de Template
 
 ### F1.1 Schemas zod
-- [ ] `core/schemas/`: `TemplateManifest`, `FormatDef`, `SlotDef` (união discriminada por `type`, incluindo `page-group`), `ContentDocument`, `Template`, `Project`, `SlotOverride`.
-- [ ] Catálogo de formatos canônicos embutido (tabela do CLAUDE.md) + suporte a formatos customizados do manifest.
+- [x] `core/schemas/`: `TemplateManifest`, `FormatDef`, `SlotDef` (união discriminada por `type`, incluindo `page-group` e `list` com `maxItems`/`itemMaxChars`), `ContentDocument`, `SlotOverride`. (Template/Project persistidos seguem em `data/types.ts` até o F2 precisar deles.)
+- [x] Catálogo de formatos canônicos embutido (tabela do CLAUDE.md) + suporte a formatos customizados do manifest. Manifest real do `ef-slides-editorial-01` validado nos testes.
 - **Aceite:** testes com manifests válidos/inválidos; tipos exportados via `z.infer` usados nos repositórios.
 
 ### F1.2 Validador de pacote `.eftpl`
-- [ ] Abrir zip (JSZip) e validar: manifest parseável e válido; layouts declarados existem; thumbnail presente; fontes referenciadas existem.
-- [ ] Análise dos HTML: rejeitar `<script>`, handlers `on*`, `javascript:`; rejeitar URLs `http(s)` em `src`/`href`/`url()`; cruzar `data-slot` do HTML com slots do manifest (faltante = erro; sobrando = warning).
-- [ ] Sanitização DOMPurify na importação (defesa em profundidade, além da validação).
-- [ ] Resultado estruturado: lista de erros/warnings com mensagem específica em pt-BR por regra do §5.5.
+- [x] Abrir zip (JSZip) e validar: manifest parseável e válido; layouts declarados existem; thumbnail presente; fontes referenciadas existem; README presente.
+- [x] Análise dos HTML: rejeitar `<script>`, handlers `on*`, `javascript:`; rejeitar URLs `http(s)` em `src`/`href`/`url()` (HTML e CSS); cruzar `data-slot` do HTML com slots do manifest (faltante = erro; sobrando = warning; `page-number` isento).
+- [x] Sanitização DOMPurify na importação (defesa em profundidade, além da validação).
+- [x] Resultado estruturado: erros/warnings com código + mensagem pt-BR (`core/validate/eftpl.ts`). Testes: pacote real aceito + 14 fixtures de erro gerados por mutação do pacote real.
 - **Aceite:** suíte de testes com pacotes quebrados de cada tipo (fixtures de erro) retornando a mensagem certa.
 
 ### F1.3 Motor de render
-- [ ] Componente `TemplateRenderer`: iframe `sandbox="allow-same-origin"`, injeta HTML do layout + `base.css` + `@font-face` das fontes do pacote (blobs → object URLs), tamanho nativo do formato, escala CSS externa para caber no container.
-- [ ] Injeção de conteúdo: texto em `data-slot` (com `maxChars` truncado + sinalizado), `<img>` nos slots de imagem com `fit`, classe `variant-<option>` no raiz, custom properties para cores, classe `slot-empty` para opcionais vazios.
-- [ ] Captura: `html-to-image` no documento do iframe, `pixelRatio` 1 (preview/thumb) e 2 (export). Medir tempo.
+- [x] Componente `TemplateRenderer`: iframe `sandbox="allow-same-origin"`, injeta HTML do layout + CSS inline com `url()` reescrito para object URLs das fontes, tamanho nativo do formato, escala CSS externa (fit ao container ou fixa).
+- [x] Injeção de conteúdo: texto em `data-slot` (com `maxChars` truncado + sinalizado), richtext restrito (b/i/strong/em/br via DOMPurify), `<img>` com `fit`, lista (`maxItems`/`itemMaxChars`), classe `variant-<option>` no raiz, custom properties para cores, `slot-empty`, `page-number`.
+- [x] Captura: `html-to-image` no raiz do iframe, `pixelRatio` 1 e 2, tempo medido. Verificado no harness `/dev/render`: @2x 3840×2160 em ~170ms (RNF-1 ok). Obs.: captura exige aba visível (página `hidden` não rasteriza — irrelevante em uso real).
 - **Aceite:** render de um layout fixture com todos os tipos de slot; captura @2x pixel-perfect comparada com screenshot manual do Chrome.
 
 ### F1.4 Templates fixture (3 pacotes feitos à mão)

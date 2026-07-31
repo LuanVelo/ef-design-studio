@@ -1,0 +1,507 @@
+/* ============================================================
+   Slides Editorial — base.css
+   Um único layout (slide-16x9.html) com 12 variações controladas
+   por classes .variant-* no elemento raiz. Todos os slots são
+   caixas posicionadas em coordenadas absolutas do canvas 1920×1080.
+   ============================================================ */
+
+@font-face {
+  font-family: "Roboto";
+  src: url("../fonts/roboto-var.woff2") format("woff2");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: block;
+}
+
+@font-face {
+  font-family: "Figtree";
+  src: url("../fonts/figtree-var.woff2") format("woff2");
+  font-weight: 300 900;
+  font-style: normal;
+  font-display: block;
+}
+
+body {
+  margin: 0;
+}
+
+.slide {
+  /* Cores editáveis do template (sobrescritas pelo app) */
+  --cor-texto: #412321;
+  --cor-fundo: #ffffff;
+  --cor-fundo-imagem: #ebebeb;
+  --cor-fundo-capa: #c4c4c4;
+  --cor-overlay: #01233c;
+
+  /* Derivadas */
+  --cor-texto-suave: color-mix(in srgb, var(--cor-texto) 60%, transparent);
+
+  position: relative;
+  width: 1920px;
+  height: 1080px;
+  overflow: hidden;
+  background: var(--cor-fundo);
+  font-family: "Figtree", sans-serif;
+  color: var(--cor-texto);
+  box-sizing: border-box;
+}
+
+.slide *,
+.slide *::before,
+.slide *::after {
+  box-sizing: border-box;
+  margin: 0;
+}
+
+/* ---------- Estado padrão: tudo oculto; cada variant liga o que usa ---------- */
+.slot-titulo,
+.slot-menu,
+.slot-destaque,
+.slot-texto-1,
+.slot-texto-2,
+.slot-texto-3,
+.slot-destaque-grande,
+.slot-titulo-grande,
+.imagem-wrap {
+  display: none;
+  position: absolute;
+}
+
+/* ---------- Tipografia base dos slots ---------- */
+
+.slot-titulo {
+  font-family: "Roboto", sans-serif;
+  font-weight: 400;
+  font-size: 21.875px;
+  line-height: 32.5px;
+  letter-spacing: 3.75px;
+  text-transform: uppercase;
+}
+
+.slot-menu {
+  display: none; /* reativado por variant como flex */
+  gap: 29px;
+  align-items: center;
+  font-family: "Roboto", sans-serif;
+  font-weight: 700;
+  font-size: 19.5px;
+  line-height: 35px;
+  white-space: nowrap;
+}
+
+.slot-menu > * {
+  color: var(--cor-texto-suave);
+}
+
+.slot-menu > *:first-child {
+  color: var(--cor-texto);
+}
+
+.slot-menu > * + *::before {
+  content: "|";
+  font-size: 22.5px;
+  margin-right: 36px;
+  color: var(--cor-texto-suave);
+}
+
+.slot-destaque {
+  font-family: "Roboto", sans-serif;
+  font-weight: 700;
+  font-size: 32.25px;
+  line-height: 45px;
+  max-height: 225px; /* 5 linhas; abaixo começa a área das colunas de texto */
+  overflow: hidden;
+}
+
+.slot-texto-1,
+.slot-texto-2,
+.slot-texto-3 {
+  font-size: 22.5px;
+  line-height: 35px;
+  white-space: pre-line; /* linha em branco = novo parágrafo (texto simples) */
+  overflow: hidden; /* o design governa: excedente é cortado, não vaza no canvas */
+}
+
+.slot-texto-1 p + p,
+.slot-texto-2 p + p,
+.slot-texto-3 p + p {
+  margin-top: 42px;
+}
+
+.slot-destaque-grande {
+  font-size: 48px;
+  line-height: 1.2;
+}
+
+.slot-titulo-grande {
+  font-family: "Roboto", sans-serif;
+  font-weight: 700;
+  font-size: 72.25px;
+  line-height: 1.2;
+}
+
+/* ---------- Slot de imagem ---------- */
+
+.imagem-wrap {
+  overflow: hidden;
+}
+
+.slot-imagem {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.slot-imagem img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Placeholder quando o slot está vazio (xadrez sutil) */
+.slot-imagem:empty,
+.slot-imagem.slot-empty {
+  background-image:
+    linear-gradient(45deg, rgba(0, 0, 0, 0.05) 25%, transparent 25%, transparent 75%, rgba(0, 0, 0, 0.05) 75%),
+    linear-gradient(45deg, rgba(0, 0, 0, 0.05) 25%, transparent 25%, transparent 75%, rgba(0, 0, 0, 0.05) 75%);
+  background-size: 64px 64px;
+  background-position: 0 0, 32px 32px;
+}
+
+/* Slots de texto vazios não deixam resíduo visual */
+.slide [data-slot]:empty:not(.slot-imagem),
+.slide [data-slot].slot-empty:not(.slot-imagem) {
+  display: none;
+}
+
+/* ============================================================
+   POSIÇÕES COMPARTILHADAS (header padrão das páginas de conteúdo)
+   ============================================================ */
+
+.variant-duas-colunas-img-direita .slot-titulo,
+.variant-duas-colunas-img-direita-cheia .slot-titulo,
+.variant-img-grande-direita .slot-titulo,
+.variant-tres-colunas .slot-titulo,
+.variant-uma-coluna .slot-titulo,
+.variant-texto-destaque .slot-titulo {
+  display: block;
+  left: 120px;
+  top: 120px;
+}
+
+.variant-duas-colunas-img-direita .slot-menu,
+.variant-duas-colunas-img-direita-cheia .slot-menu,
+.variant-img-grande-direita .slot-menu,
+.variant-tres-colunas .slot-menu,
+.variant-uma-coluna .slot-menu,
+.variant-texto-destaque .slot-menu {
+  display: flex;
+  left: 120px;
+  top: 183.5px;
+}
+
+/* header deslocado para a direita (imagem à esquerda) */
+.variant-duas-colunas-img-esquerda .slot-titulo,
+.variant-duas-colunas-img-esquerda-cheia .slot-titulo {
+  display: block;
+  left: 844.7px;
+  top: 120px;
+}
+
+.variant-duas-colunas-img-esquerda .slot-menu,
+.variant-duas-colunas-img-esquerda-cheia .slot-menu {
+  display: flex;
+  left: 844.7px;
+  top: 183.5px;
+}
+
+.variant-img-grande-esquerda .slot-titulo {
+  display: block;
+  left: 1148px;
+  top: 120px;
+}
+
+.variant-img-grande-esquerda .slot-menu {
+  display: flex;
+  left: 1148px;
+  top: 183.5px;
+}
+
+/* ============================================================
+   VARIANTS — duas colunas com imagem lateral
+   ============================================================ */
+
+.variant-duas-colunas-img-direita .slot-destaque,
+.variant-duas-colunas-img-direita-cheia .slot-destaque {
+  display: block;
+  left: 120px;
+  top: 306.5px;
+  width: 955px;
+}
+
+.variant-duas-colunas-img-esquerda .slot-destaque,
+.variant-duas-colunas-img-esquerda-cheia .slot-destaque {
+  display: block;
+  left: 844.7px;
+  top: 306.5px;
+  width: 955px;
+}
+
+.variant-duas-colunas-img-direita .slot-texto-1,
+.variant-duas-colunas-img-direita-cheia .slot-texto-1 {
+  display: block;
+  left: 120px;
+  top: 558px;
+  width: 436px;
+  max-height: 402px;
+}
+
+.variant-duas-colunas-img-direita .slot-texto-2,
+.variant-duas-colunas-img-direita-cheia .slot-texto-2 {
+  display: block;
+  left: 649.7px;
+  top: 558px;
+  width: 425.6px;
+  max-height: 402px;
+}
+
+.variant-duas-colunas-img-esquerda .slot-texto-1,
+.variant-duas-colunas-img-esquerda-cheia .slot-texto-1 {
+  display: block;
+  left: 844.7px;
+  top: 558px;
+  width: 436px;
+  max-height: 402px;
+}
+
+.variant-duas-colunas-img-esquerda .slot-texto-2,
+.variant-duas-colunas-img-esquerda-cheia .slot-texto-2 {
+  display: block;
+  left: 1374.4px;
+  top: 558px;
+  width: 425.6px;
+  max-height: 402px;
+}
+
+/* imagem com moldura (dentro das margens) */
+.variant-duas-colunas-img-direita .imagem-wrap,
+.variant-duas-colunas-img-esquerda .imagem-wrap {
+  display: block;
+  top: 120px;
+  width: 660.7px;
+  height: 840px;
+  background: var(--cor-fundo-imagem);
+  padding: 32px;
+}
+
+.variant-duas-colunas-img-direita .imagem-wrap {
+  left: 1139.3px;
+}
+
+.variant-duas-colunas-img-esquerda .imagem-wrap {
+  left: 120px;
+}
+
+/* imagem sangrada (até as bordas) */
+.variant-duas-colunas-img-direita-cheia .imagem-wrap,
+.variant-duas-colunas-img-esquerda-cheia .imagem-wrap {
+  display: block;
+  top: 0;
+  height: 1080px;
+  width: 780.7px;
+  background: var(--cor-fundo-imagem);
+  padding: 32px;
+}
+
+.variant-duas-colunas-img-direita-cheia .imagem-wrap {
+  left: 1139.3px;
+}
+
+.variant-duas-colunas-img-esquerda-cheia .imagem-wrap {
+  left: 0;
+}
+
+/* Moldura interna: o slot ocupa a área menos o padding do wrap */
+.imagem-wrap .slot-imagem {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+/* ============================================================
+   VARIANTS — imagem grande + coluna estreita de texto
+   ============================================================ */
+
+.variant-img-grande-esquerda .imagem-wrap {
+  display: block;
+  left: 0;
+  top: 0;
+  width: 1076px;
+  height: 1080px;
+  background: var(--cor-fundo-imagem);
+  padding: 32px;
+}
+
+.variant-img-grande-direita .imagem-wrap {
+  display: block;
+  left: 844px;
+  top: 0;
+  width: 1076px;
+  height: 1080px;
+  background: var(--cor-fundo-imagem);
+  padding: 32px;
+}
+
+.variant-img-grande-esquerda .slot-texto-1 {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  left: 1148px;
+  top: 340px;
+  width: 652px;
+  height: 620px;
+}
+
+.variant-img-grande-direita .slot-texto-1 {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  left: 120px;
+  top: 340px;
+  width: 652px;
+  height: 620px;
+}
+
+/* ============================================================
+   VARIANT — três colunas de texto
+   ============================================================ */
+
+.variant-tres-colunas .slot-texto-1 {
+  display: block;
+  left: 120px;
+  top: 308.75px;
+  width: 517.3px;
+  max-height: 651.25px;
+}
+
+.variant-tres-colunas .slot-texto-2 {
+  display: block;
+  left: 701.3px;
+  top: 308.75px;
+  width: 517.3px;
+  max-height: 651.25px;
+}
+
+.variant-tres-colunas .slot-texto-3 {
+  display: block;
+  left: 1282.7px;
+  top: 308.75px;
+  width: 517.3px;
+  max-height: 651.25px;
+}
+
+/* ============================================================
+   VARIANT — uma coluna (frase grande, ancorada embaixo)
+   ============================================================ */
+
+.variant-uma-coluna .slot-destaque-grande {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  left: 120px;
+  top: 308.75px;
+  width: 1180px;
+  height: 651.25px;
+}
+
+/* ============================================================
+   VARIANT — texto destaque (duas colunas assimétricas)
+   ============================================================ */
+
+.variant-texto-destaque .slot-destaque-grande {
+  display: block;
+  left: 264.5px;
+  top: 408.75px;
+  width: 674px;
+}
+
+.variant-texto-destaque .slot-texto-1 {
+  display: block;
+  left: 1161px;
+  top: 408.75px;
+  width: 639px;
+  font-size: 32px;
+  line-height: 1.2;
+  white-space: normal;
+}
+
+.variant-texto-destaque .slot-texto-1 b,
+.variant-texto-destaque .slot-texto-1 strong {
+  font-weight: 400;
+  color: #131313;
+}
+
+/* ============================================================
+   VARIANTS — capas e transição
+   ============================================================ */
+
+.variant-capa-imagem .imagem-wrap,
+.variant-transicao .imagem-wrap {
+  display: block;
+  inset: 0;
+  width: 1920px;
+  height: 1080px;
+  padding: 0;
+}
+
+.variant-capa-imagem .slot-menu,
+.variant-capa-lisa .slot-menu {
+  display: flex;
+  left: 120px;
+  top: 120px;
+}
+
+.variant-capa-imagem .slot-titulo-grande,
+.variant-capa-lisa .slot-titulo-grande {
+  display: block;
+  left: 120px;
+  bottom: 120px;
+  width: 1680px;
+}
+
+.variant-capa-lisa {
+  background: var(--cor-fundo-capa);
+}
+
+.variant-transicao {
+  background: var(--cor-overlay);
+}
+
+.variant-transicao .imagem-wrap {
+  background: var(--cor-overlay);
+}
+
+.variant-transicao .slot-imagem img {
+  opacity: 0.3;
+  object-position: bottom;
+}
+
+.variant-transicao .slot-imagem:empty,
+.variant-transicao .slot-imagem.slot-empty {
+  background: none; /* transição sem imagem = fundo liso na cor do overlay */
+}
+
+.variant-transicao .slot-titulo-grande {
+  display: block;
+  left: 120px;
+  bottom: 120px;
+  width: 1229px;
+  font-weight: 300;
+  color: #ffffff;
+}
+
+.variant-transicao .slot-titulo-grande b,
+.variant-transicao .slot-titulo-grande strong {
+  font-weight: 700;
+}
