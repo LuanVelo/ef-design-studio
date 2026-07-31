@@ -34,6 +34,19 @@ function err(code: string, message: string): ValidationIssue {
 }
 
 /**
+ * Normaliza a entrada para um tipo que o JSZip reconhece em qualquer realm.
+ * (ArrayBuffer criado em outro realm — ex.: Node dentro do jsdom — falha no
+ * `instanceof` interno do JSZip; um Uint8Array construído aqui não.)
+ */
+function toZipInput(data: ArrayBuffer | Uint8Array | Blob): Uint8Array | Blob {
+  if (typeof Blob !== 'undefined' && data instanceof Blob) return data
+  if (ArrayBuffer.isView(data)) {
+    return new Uint8Array(data.buffer, data.byteOffset, data.byteLength)
+  }
+  return new Uint8Array(data)
+}
+
+/**
  * Valida um pacote .eftpl (zip) conforme o Contrato 1 do CLAUDE.md.
  * Retorna erros/warnings com mensagens específicas em pt-BR.
  */
@@ -51,7 +64,7 @@ export async function validateEftpl(
 
   let zip: JSZip
   try {
-    zip = await JSZip.loadAsync(data)
+    zip = await JSZip.loadAsync(toZipInput(data))
   } catch {
     result.errors.push(
       err('PACOTE_INVALIDO', 'O arquivo não é um pacote .eftpl válido (zip corrompido ou vazio).'),

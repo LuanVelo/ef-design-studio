@@ -26,6 +26,15 @@ class TemplatesRepository extends Repository<TemplateRecord> {
       .and((t) => t.status === status)
       .toArray()
   }
+
+  /** Todas as versões instaladas de um mesmo id de manifest (para conflito/versionamento). */
+  async listByManifestId(ownerUserId: string, manifestId: string) {
+    return this.table
+      .where('manifestId')
+      .equals(manifestId)
+      .and((t) => t.ownerUserId === ownerUserId)
+      .toArray()
+  }
 }
 
 class ProjectsRepository extends Repository<ProjectRecord> {

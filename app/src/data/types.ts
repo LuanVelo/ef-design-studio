@@ -1,8 +1,9 @@
 /**
- * Tipos mínimos da camada de dados (F0).
- * A partir do F1, os schemas zod em core/ passam a ser a fonte dos tipos
- * de Template/Project — estes tipos serão substituídos por z.infer.
+ * Tipos da camada de dados. O manifest embutido em TemplateRecord vem dos
+ * schemas zod de core/ (fonte dos tipos do contrato .eftpl).
  */
+
+import type { TemplateManifest } from '@core/schemas'
 
 /** Convenção do CLAUDE.md: todo registro persistido carrega estes campos. */
 export type BaseRecord = {
@@ -36,6 +37,12 @@ export type TemplateRecord = BaseRecord & {
   status: TemplateStatus
   lastUsedAt?: string
   usageCount: number
+  description?: string
+  tags?: string[]
+  /** Snapshot do manifest validado (evita reabrir o zip para grid/detalhe) */
+  manifest?: TemplateManifest
+  /** manifestId de origem quando este registro é uma cópia */
+  copiedFrom?: string
   /** Bytes do pacote .eftpl (ArrayBuffer: portátil entre navegadores e testável) */
   packageBytes?: ArrayBuffer
   packageMime?: string

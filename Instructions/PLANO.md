@@ -81,10 +81,10 @@
 ## F2 — Gerenciador de Templates
 
 ### F2.1 Importação (RF-G1)
-- [ ] Tela de importação: drag-and-drop + picker (via fs-adapter), estado vazio com ilustração (estilo R7).
-- [ ] Fluxo: validar → tela de preview (thumbnail, metadados, formatos, erros/warnings) → confirmar → gravar `Template` (com `packageBlob` e `thumbnailBlob`), status `novo`.
-- [ ] Conflito de `id`: dialog oferecendo "nova versão" / "importar como cópia".
-- **Aceite:** importar os 3 fixtures com sucesso; importar cada fixture de erro e ver a mensagem específica.
+- [x] Tela de importação: drag-and-drop + picker (via fs-adapter), estado vazio com ilustração (estilo R7).
+- [x] Fluxo: validar → tela de preview (thumbnail, metadados, formatos, erros/warnings) → confirmar → gravar `Template` (com `packageBytes` e `thumbnailBytes` + snapshot do manifest), status `novo`.
+- [x] Conflito de `id`: dialog oferecendo "nova versão" / "importar como cópia" (versão idêntica instalada bloqueia "nova versão"; cópia ganha manifestId derivado `-copia[-n]` com origem marcada).
+- **Aceite:** ✅ 3 fixtures importados pela UI (drop real no navegador) + conflito e pacote corrompido com mensagem específica; testes vitest de análise/gravação/conflito/cópia/isolamento por usuário.
 
 ### F2.2 Grid principal (tela do Gerenciador)
 - [ ] Grid de cards conforme R3/R5: pilha fanada de thumbnails por formato, nome, badge de categoria colorido, versão, badges `novo`/`recente`, contagem de uso, data em caps pequenas.

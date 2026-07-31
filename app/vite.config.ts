@@ -59,6 +59,10 @@ export default defineConfig({
       '@export': fileURLToPath(new URL('./src/export', import.meta.url)),
     },
   },
+  server: {
+    // Respeita a porta atribuída pelo harness de preview (autoPort)
+    port: process.env.PORT ? Number(process.env.PORT) : undefined,
+  },
   test: {
     environment: 'jsdom',
     globals: true,

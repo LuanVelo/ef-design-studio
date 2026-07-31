@@ -36,12 +36,12 @@ describe('App shell e rotas', () => {
   })
 
   it.each([
-    ['/templates', /nenhum template ainda/i],
+    ['/templates', /seus templates moram aqui/i],
     ['/social', /social templates/i],
     ['/slides', /slides & pdf/i],
-  ])('renderiza %s', (path, heading) => {
+  ])('renderiza %s', async (path, heading) => {
     renderAt(path)
-    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(heading)
+    expect(await screen.findByRole('heading', { level: 1 })).toHaveTextContent(heading)
   })
 
   it('sem sessão, rotas do app redirecionam para /login', async () => {
@@ -53,7 +53,9 @@ describe('App shell e rotas', () => {
     const user = userEvent.setup()
     renderAt('/')
     await user.click(screen.getByRole('link', { name: 'Templates' }))
-    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(/nenhum template ainda/i)
+    expect(await screen.findByRole('heading', { level: 1 })).toHaveTextContent(
+      /seus templates moram aqui/i,
+    )
     await user.click(screen.getByRole('link', { name: 'Slides & PDF' }))
     expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(/slides & pdf/i)
   })
