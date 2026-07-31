@@ -87,10 +87,10 @@
 - **Aceite:** ✅ 3 fixtures importados pela UI (drop real no navegador) + conflito e pacote corrompido com mensagem específica; testes vitest de análise/gravação/conflito/cópia/isolamento por usuário.
 
 ### F2.2 Grid principal (tela do Gerenciador)
-- [ ] Grid de cards conforme R3/R5: pilha fanada de thumbnails por formato, nome, badge de categoria colorido, versão, badges `novo`/`recente`, contagem de uso, data em caps pequenas.
-- [ ] Busca por texto, filtros (categoria/tag/status), ordenação (recentes, mais usados, A–Z, importação); seção "Recentes" no topo.
-- [ ] Regras de status: `novo` expira p/ `ativo` (14 dias ou 1º uso); `recente` calculado por `lastUsedAt`.
-- **Aceite:** todos os filtros/ordenações funcionando com ≥6 templates de teste; mobile = somente leitura.
+- [x] Grid de cards conforme R3/R5: pilha fanada de thumbnails por formato, nome, badge de categoria colorido, versão, badges `novo`/`recente`, contagem de uso, data em caps pequenas.
+- [x] Busca por texto (insensível a acentos, cobre nome/descrição/tags), filtros (categoria/tag/status), ordenação (recentes, mais usados, A–Z, importação); seção "Recentes" no topo (janela de 7 dias, some com filtros ativos).
+- [x] Regras de status: `novo` expira p/ `ativo` (14 dias ou 1º uso, aplicado no load); `recente` calculado por `lastUsedAt`; grid mostra a maior versão de cada manifestId.
+- **Aceite:** ✅ verificado no navegador com 6 templates (fixtures + cópias): busca, 3 filtros e 4 ordenações; mobile (<768px) esconde importação e mostra aviso somente leitura. Lógica pura em `template-filters.ts` com testes vitest.
 
 ### F2.3 Detalhe do template (RF-G2)
 - [ ] Preview navegável de todos os formatos e variants (usando o motor F1.3), README renderizado, metadados, histórico de versões.

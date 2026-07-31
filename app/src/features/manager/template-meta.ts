@@ -8,8 +8,11 @@ export function formatDateCaps(iso: string): string {
   return `${d.getDate()} ${MONTHS[d.getMonth()]} ${d.getFullYear()}`
 }
 
-/** true quando o template ainda conta como "recente" (usado nos últimos 7 dias) */
-export function isRecent(template: TemplateRecord): boolean {
+/** Janela de recência (badge/filtro "recente"), em dias */
+export const RECENTE_JANELA_DIAS = 7
+
+/** true quando o template ainda conta como "recente" (usado dentro da janela) */
+export function isRecent(template: TemplateRecord, now = Date.now()): boolean {
   if (!template.lastUsedAt) return false
-  return Date.now() - Date.parse(template.lastUsedAt) < 7 * 24 * 60 * 60 * 1000
+  return now - Date.parse(template.lastUsedAt) < RECENTE_JANELA_DIAS * 24 * 60 * 60 * 1000
 }
