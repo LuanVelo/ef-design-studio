@@ -1,0 +1,173 @@
+/* ============================================================
+   PDF Básico — base.css
+   Página A4 retrato (794×1123 @96dpi). Variações: capa | conteudo.
+   Cada slot existe uma única vez no layout; as variações apenas
+   reposicionam/ocultam via CSS. O slot especial page-number é
+   preenchido automaticamente pelo app.
+   ============================================================ */
+
+@font-face {
+  font-family: "Inter";
+  src: url("../fonts/inter-var.woff2") format("woff2");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: block;
+}
+
+body {
+  margin: 0;
+}
+
+.pagina {
+  /* Cores editáveis do template */
+  --cor-texto: #232323;
+  --cor-destaque: #4c9c5e;
+
+  position: relative;
+  width: 794px;
+  height: 1123px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: #ffffff;
+  color: var(--cor-texto);
+  font-family: "Inter", sans-serif;
+  box-sizing: border-box;
+}
+
+.pagina *,
+.pagina *::before,
+.pagina *::after {
+  box-sizing: border-box;
+  margin: 0;
+}
+
+/* ---------- Blocos ---------- */
+
+.cabecalho {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 44px 56px 20px;
+  border-bottom: 2px solid var(--cor-destaque);
+}
+
+.slot-titulo {
+  font-weight: 700;
+  font-size: 15px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+.miolo {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  padding: 40px 56px;
+  flex: 1;
+  min-height: 0;
+}
+
+.slot-subtitulo {
+  font-size: 17px;
+  font-weight: 600;
+  color: color-mix(in srgb, var(--cor-texto) 70%, transparent);
+}
+
+.slot-corpo {
+  font-size: 13.5px;
+  line-height: 1.75;
+  white-space: pre-line;
+}
+
+.slot-topicos {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  font-size: 13.5px;
+  line-height: 1.55;
+}
+
+.slot-topicos > span {
+  position: relative;
+  padding-left: 22px;
+}
+
+.slot-topicos > span::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 7px;
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+  background: var(--cor-destaque);
+}
+
+.rodape {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 18px 56px 40px;
+  margin-top: auto;
+  font-size: 11px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--cor-texto) 55%, transparent);
+}
+
+.numero-pagina {
+  font-weight: 700;
+  color: var(--cor-texto);
+}
+
+/* Slots opcionais vazios somem */
+.slot-subtitulo.slot-empty,
+.slot-corpo.slot-empty,
+.slot-topicos.slot-empty,
+.slot-rodape.slot-empty {
+  display: none;
+}
+
+/* ---------- Variações ---------- */
+
+/* capa: título grande com barra de destaque, centralizado verticalmente */
+.variant-capa .cabecalho {
+  flex: 1;
+  align-items: flex-end;
+  border-bottom: none;
+  padding: 0 96px 10px;
+}
+
+.variant-capa .slot-titulo {
+  font-size: 54px;
+  line-height: 1.1;
+  letter-spacing: -1.5px;
+  text-transform: none;
+}
+
+.variant-capa .slot-titulo::before {
+  content: "";
+  display: block;
+  width: 88px;
+  height: 10px;
+  border-radius: 5px;
+  background: var(--cor-destaque);
+  margin-bottom: 34px;
+}
+
+.variant-capa .miolo {
+  flex: 0 1 auto;
+  padding: 10px 96px 60px;
+}
+
+.variant-capa .slot-subtitulo {
+  font-size: 18px;
+}
+
+.variant-capa .slot-corpo,
+.variant-capa .slot-topicos {
+  display: none;
+}

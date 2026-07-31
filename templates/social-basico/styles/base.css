@@ -1,0 +1,189 @@
+/* ============================================================
+   Social Básico — base.css
+   Um layout por formato (mesma estrutura), variações controladas
+   por classes .variant-* no elemento raiz .peca.
+   ============================================================ */
+
+@font-face {
+  font-family: "Inter";
+  src: url("../fonts/inter-var.woff2") format("woff2");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: block;
+}
+
+body {
+  margin: 0;
+}
+
+.peca {
+  /* Cores editáveis do template (sobrescritas pelo app) */
+  --cor-fundo: #f4efe7;
+  --cor-texto: #1a1a1a;
+  --cor-destaque: #e8552d;
+
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--cor-fundo);
+  color: var(--cor-texto);
+  font-family: "Inter", sans-serif;
+  box-sizing: border-box;
+}
+
+.peca *,
+.peca *::before,
+.peca *::after {
+  box-sizing: border-box;
+  margin: 0;
+}
+
+/* Dimensões exatas por formato */
+.formato-stories { width: 1080px; height: 1920px; }
+.formato-feed-square { width: 1080px; height: 1080px; }
+.formato-feed-portrait { width: 1080px; height: 1350px; }
+
+/* ---------- Blocos ---------- */
+
+.imagem-wrap {
+  display: none;
+  position: relative;
+  overflow: hidden;
+}
+
+.slot-imagem-hero {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  background: color-mix(in srgb, var(--cor-texto) 8%, transparent);
+}
+
+.conteudo {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 36px;
+  padding: 88px;
+  flex: 1;
+  justify-content: flex-end;
+  min-height: 0;
+}
+
+.slot-topicos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  font-size: 24px;
+  font-weight: 600;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+}
+
+.slot-topicos > span {
+  border: 2.5px solid currentColor;
+  border-radius: 999px;
+  padding: 12px 26px;
+}
+
+.slot-titulo {
+  font-size: 92px;
+  font-weight: 800;
+  line-height: 1.04;
+  letter-spacing: -2.5px;
+  white-space: pre-line;
+}
+
+.slot-descricao {
+  font-size: 34px;
+  font-weight: 400;
+  line-height: 1.45;
+  max-width: 820px;
+}
+
+.slot-cta {
+  display: inline-flex;
+  background: var(--cor-destaque);
+  color: #ffffff;
+  font-size: 30px;
+  font-weight: 700;
+  padding: 24px 52px;
+  border-radius: 999px;
+}
+
+/* Slots opcionais vazios somem */
+.slot-topicos.slot-empty,
+.slot-descricao.slot-empty,
+.slot-cta.slot-empty,
+.slot-topicos:empty,
+.slot-descricao:empty,
+.slot-cta:empty {
+  display: none;
+}
+
+/* ---------- Variações ---------- */
+
+/* imagem-cheia: imagem cobre tudo; texto sobre gradiente na base */
+.variant-imagem-cheia .imagem-wrap {
+  display: block;
+  position: absolute;
+  inset: 0;
+}
+
+.variant-imagem-cheia .conteudo {
+  z-index: 1;
+  color: #ffffff;
+  background: linear-gradient(to top, rgb(0 0 0 / 0.62), rgb(0 0 0 / 0.18) 62%, transparent);
+  padding-top: 220px;
+}
+
+/* imagem-metade: metade superior imagem, inferior texto */
+.variant-imagem-metade .imagem-wrap {
+  display: block;
+  flex: 1 1 52%;
+  min-height: 0;
+}
+
+.variant-imagem-metade .conteudo {
+  flex: 0 1 auto;
+}
+
+.variant-imagem-metade .slot-titulo {
+  font-size: 76px;
+}
+
+/* so-texto: sem imagem; círculo decorativo na cor de destaque */
+.variant-so-texto .conteudo {
+  justify-content: center;
+}
+
+.variant-so-texto::before {
+  content: "";
+  position: absolute;
+  width: 560px;
+  height: 560px;
+  border-radius: 50%;
+  background: var(--cor-destaque);
+  opacity: 0.16;
+  top: -170px;
+  right: -170px;
+}
+
+/* Ajustes por formato (menos respiro nos formatos baixos) */
+.formato-feed-square .conteudo {
+  padding: 72px;
+  gap: 28px;
+}
+
+.formato-feed-square .slot-titulo {
+  font-size: 76px;
+}
+
+.formato-feed-square.variant-imagem-metade .slot-titulo {
+  font-size: 58px;
+}
+
+.formato-feed-portrait.variant-imagem-metade .slot-titulo {
+  font-size: 64px;
+}

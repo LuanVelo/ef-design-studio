@@ -1,0 +1,53 @@
+{
+  "schemaVersion": 1,
+  "title": "Proposta comercial — Cliente Exemplo",
+  "language": "pt-BR",
+  "pages": [
+    {
+      "suggestedVariant": "capa-lisa",
+      "slots": {
+        "titulo-grande": "Proposta<br>Comercial",
+        "titulo": "Cliente Exemplo"
+      }
+    },
+    {
+      "suggestedVariant": "transicao",
+      "slots": {
+        "titulo-grande": "Quem somos"
+      }
+    },
+    {
+      "suggestedVariant": "duas-colunas-img-direita",
+      "slots": {
+        "titulo": "Sobre a empresa",
+        "menu": ["Visão", "Escopo", "Equipe"],
+        "destaque": "Quinze anos de experiência em projetos de comunicação para marcas que querem crescer.",
+        "texto-1": "Atuamos de ponta a ponta: estratégia, identidade e produção. Nosso time combina design, conteúdo e tecnologia para entregar peças consistentes em todos os canais."
+      }
+    },
+    {
+      "suggestedVariant": "tres-colunas",
+      "slots": {
+        "titulo": "Escopo do projeto",
+        "texto-1": "Fase 1 — Diagnóstico: imersão na marca, análise de concorrência e definição de território visual.",
+        "texto-2": "Fase 2 — Produção: sistema de templates, biblioteca de peças e diretrizes de aplicação.",
+        "texto-3": "Fase 3 — Acompanhamento: rodadas mensais de revisão e evolução do sistema."
+      }
+    },
+    {
+      "suggestedVariant": "texto-destaque",
+      "slots": {
+        "titulo": "Investimento",
+        "destaque-grande": "Planos a partir de <b>R$ 4.900/mês</b> com contrato mínimo de 6 meses.",
+        "texto-1": "Condições especiais para escopo fechado. Valores detalhados na página seguinte."
+      }
+    },
+    {
+      "suggestedVariant": "capa-lisa",
+      "slots": {
+        "titulo-grande": "Obrigado",
+        "titulo": "contato@exemplo.com.br"
+      }
+    }
+  ]
+}

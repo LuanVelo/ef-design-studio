@@ -1,0 +1,39 @@
+{
+  "schemaVersion": 1,
+  "id": "ef-social-basico",
+  "name": "Social Básico",
+  "category": "social",
+  "version": "1.0.0",
+  "author": "Claude",
+  "createdWith": "claude-fable-5",
+  "description": "Template social de referência: tipografia forte, pill de CTA e três variações de composição (imagem cheia, imagem metade, só texto). Exercita todos os formatos sociais e os tipos de slot do contrato.",
+  "tags": ["basico", "referencia", "claro", "produto"],
+  "formats": [
+    { "key": "stories", "file": "layouts/stories.html", "width": 1080, "height": 1920, "pages": "single" },
+    { "key": "feed-square", "file": "layouts/feed-square.html", "width": 1080, "height": 1080, "pages": "single" },
+    { "key": "feed-portrait", "file": "layouts/feed-portrait.html", "width": 1080, "height": 1350, "pages": "single" },
+    { "key": "carousel-square", "file": "layouts/carousel-square.html", "width": 1080, "height": 1080, "pages": "multi", "minPages": 2, "maxPages": 10 }
+  ],
+  "slots": [
+    {
+      "key": "layout-variant",
+      "type": "variant",
+      "label": "Variação de layout",
+      "options": ["imagem-cheia", "imagem-metade", "so-texto"],
+      "default": "imagem-cheia"
+    },
+    { "key": "titulo", "type": "text", "label": "Título principal", "required": true, "maxChars": 60, "multiline": true },
+    { "key": "descricao", "type": "richtext", "label": "Descrição (negrito/itálico permitidos)", "required": false, "maxChars": 140, "multiline": true },
+    { "key": "cta", "type": "text", "label": "Texto do botão (CTA)", "required": false, "maxChars": 30, "multiline": false },
+    { "key": "topicos", "type": "list", "label": "Tópicos (chips no topo)", "required": false, "maxItems": 4, "itemMaxChars": 24 },
+    { "key": "imagem-hero", "type": "image", "label": "Imagem de destaque", "required": false, "aspectHint": "livre", "fit": "cover" }
+  ],
+  "fonts": [{ "family": "Inter", "file": "fonts/inter-var.woff2", "license": "OFL" }],
+  "colors": {
+    "editable": [
+      { "key": "cor-fundo", "label": "Cor de fundo", "default": "#F4EFE7" },
+      { "key": "cor-texto", "label": "Cor do texto", "default": "#1A1A1A" },
+      { "key": "cor-destaque", "label": "Cor de destaque (CTA)", "default": "#E8552D" }
+    ]
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "schemaVersion": 1,
+  "title": "Relatório mensal — Julho 2026",
+  "language": "pt-BR",
+  "pages": [
+    {
+      "suggestedVariant": "capa",
+      "slots": {
+        "titulo": "Relatório mensal de resultados",
+        "subtitulo": "Cliente Exemplo — Julho de 2026",
+        "rodape": "Relatório mensal — Empresa Exemplo"
+      }
+    },
+    {
+      "suggestedVariant": "conteudo",
+      "slots": {
+        "titulo": "Resumo executivo",
+        "subtitulo": "Principais resultados do mês",
+        "corpo": "O mês de julho consolidou a tendência de crescimento observada no trimestre. O alcance orgânico cresceu de forma consistente e a taxa de conversão manteve-se acima da meta estabelecida no planejamento.\n\nOs investimentos em mídia foram redistribuídos para os canais de melhor desempenho, o que explica a melhora do custo por aquisição.",
+        "rodape": "Relatório mensal — Empresa Exemplo"
+      }
+    },
+    {
+      "suggestedVariant": "conteudo",
+      "slots": {
+        "titulo": "Próximos passos",
+        "topicos": [
+          "Ampliar o orçamento dos canais com melhor custo por aquisição",
+          "Testar dois novos formatos de peça no carrossel semanal",
+          "Revisar a linha editorial do blog com base nas buscas de julho",
+          "Preparar o planejamento do próximo trimestre até 15/08"
+        ],
+        "rodape": "Relatório mensal — Empresa Exemplo"
+      }
+    }
+  ]
+}

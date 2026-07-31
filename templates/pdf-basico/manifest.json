@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "id": "ef-pdf-basico",
+  "name": "PDF Básico",
+  "category": "pdf",
+  "version": "1.0.0",
+  "author": "Claude",
+  "createdWith": "claude-fable-5",
+  "description": "Template de documento A4 retrato de referência: capa, páginas de conteúdo com header/footer e numeração automática de página (slot page-number).",
+  "tags": ["basico", "referencia", "documento", "a4"],
+  "formats": [
+    { "key": "pdf-a4-portrait", "file": "layouts/pdf-a4-portrait.html", "width": 794, "height": 1123, "pages": "multi" }
+  ],
+  "slots": [
+    {
+      "key": "layout-variant",
+      "type": "variant",
+      "label": "Variação de página",
+      "options": ["capa", "conteudo"],
+      "default": "conteudo"
+    },
+    { "key": "titulo", "type": "text", "label": "Título (documento ou seção)", "required": true, "maxChars": 70, "multiline": true },
+    { "key": "subtitulo", "type": "text", "label": "Subtítulo", "required": false, "maxChars": 90, "multiline": false },
+    { "key": "corpo", "type": "richtext", "label": "Corpo de texto", "required": false, "maxChars": 2200, "multiline": true },
+    { "key": "topicos", "type": "list", "label": "Lista de tópicos", "required": false, "maxItems": 6, "itemMaxChars": 90 },
+    { "key": "rodape", "type": "text", "label": "Texto do rodapé", "required": false, "maxChars": 80, "multiline": false }
+  ],
+  "fonts": [{ "family": "Inter", "file": "fonts/inter-var.woff2", "license": "OFL" }],
+  "colors": {
+    "editable": [
+      { "key": "cor-texto", "label": "Cor do texto", "default": "#232323" },
+      { "key": "cor-destaque", "label": "Cor de destaque", "default": "#4C9C5E" }
+    ]
+  }
+}

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import {
   captureElement,
   createResourceUrls,
@@ -6,28 +6,37 @@ import {
   type RenderContent,
 } from '@core/render'
 import { validateEftpl, type EftplValidationResult } from '@core/validate/eftpl'
+import type { SlotValue, TemplateManifest } from '@core/schemas'
 import { PillButton } from '@components/PillButton'
 
 /**
- * Harness de desenvolvimento do motor de render (F1.3).
- * Carrega o fixture ef-slides-editorial-01, renderiza cada variant e
- * mede a captura @1x/@2x. Sem link na navegação — acessar /dev/render.
+ * Harness de desenvolvimento do motor de render (F1.3/F1.4).
+ * Acessar /dev/render?pkg=<id> — ids disponíveis em public/fixtures/:
+ * ef-slides-editorial-01 (default) · ef-social-basico · ef-pdf-basico
  */
 
-const SAMPLE_CONTENT: RenderContent = {
-  values: {
-    titulo: 'Institucional',
-    menu: ['Visão', 'Escopo', 'Equipe'],
-    destaque: 'Um parágrafo de <b>destaque</b> para apresentar a seção com clareza.',
-    'texto-1':
-      'Primeira coluna de texto corrido, com conteúdo suficiente para avaliar o ritmo tipográfico do template.',
-    'texto-2':
-      'Segunda coluna de texto, mantendo o tom editorial e as margens generosas do layout original.',
-    'texto-3': 'Terceira coluna, usada apenas na variação de três colunas.',
-    'destaque-grande':
-      'Uma frase grande que resume a ideia central do slide em <b>quarenta e oito pixels</b>.',
-    'titulo-grande': 'Proposta<br>Comercial',
-  },
+/** Conteúdo de amostra gerado dos slots do manifest (funciona para qualquer template) */
+function sampleContentFor(manifest: TemplateManifest): Record<string, SlotValue> {
+  const values: Record<string, SlotValue> = {}
+  const lorem =
+    'Texto de exemplo para avaliar o ritmo tipográfico do template, com conteúdo suficiente para ocupar o espaço reservado do slot. '
+  for (const slot of manifest.slots) {
+    if (slot.type === 'text') {
+      const label = slot.label.split('(')[0].trim()
+      values[slot.key] = (slot.maxChars ?? 60) < 45 ? label : `${label} de exemplo`
+    } else if (slot.type === 'richtext') {
+      const target = Math.min(slot.maxChars ?? 200, 320)
+      let text = ''
+      while (text.length < target * 0.6) text += lorem
+      values[slot.key] = `<b>Exemplo.</b> ${text.slice(0, target - 12)}`
+    } else if (slot.type === 'list') {
+      values[slot.key] = ['Primeiro item', 'Segundo item', 'Terceiro item'].slice(
+        0,
+        slot.maxItems ?? 3,
+      )
+    }
+  }
+  return values
 }
 
 /** Imagem de teste gerada em runtime (gradiente com marcações) */
@@ -51,9 +60,12 @@ function makeTestImage(): string {
 }
 
 export function RenderHarnessPage() {
+  const pkg =
+    new URLSearchParams(window.location.search).get('pkg') ?? 'ef-slides-editorial-01'
   const [validation, setValidation] = useState<EftplValidationResult | null>(null)
   const [resourceUrls, setResourceUrls] = useState<Record<string, string>>({})
-  const [variant, setVariant] = useState<string>('duas-colunas-img-direita')
+  const [formatKey, setFormatKey] = useState<string | null>(null)
+  const [variant, setVariant] = useState<string | null>(null)
   const [capture, setCapture] = useState<{ url: string; ms: number; ratio: number } | null>(null)
   const [error, setError] = useState<string | null>(null)
   const rootRef = useRef<HTMLElement | null>(null)
@@ -63,9 +75,9 @@ export function RenderHarnessPage() {
     let revoke: (() => void) | undefined
     void (async () => {
       try {
-        const res = await fetch(`${import.meta.env.BASE_URL}fixtures/ef-slides-editorial-01.eftpl`)
-        const bytes = await res.arrayBuffer()
-        const result = await validateEftpl(bytes)
+        const res = await fetch(`${import.meta.env.BASE_URL}fixtures/${pkg}.eftpl`)
+        if (!res.ok) throw new Error(`Fixture "${pkg}" não encontrado (${res.status})`)
+        const result = await validateEftpl(await res.arrayBuffer())
         setValidation(result)
         if (result.ok) {
           const resources = createResourceUrls(result.binaries)
@@ -77,20 +89,30 @@ export function RenderHarnessPage() {
       }
     })()
     return () => revoke?.()
-  }, [])
+  }, [pkg])
+
+  const manifest = validation?.ok ? validation.manifest : undefined
+  const sampleValues = useMemo(
+    () => (manifest ? sampleContentFor(manifest) : {}),
+    [manifest],
+  )
 
   if (error) return <p className="p-8 text-sm text-red-700">Erro: {error}</p>
   if (!validation) return <p className="p-8 text-sm text-ink-muted">Carregando fixture…</p>
-  if (!validation.ok || !validation.manifest) {
-    return (
-      <pre className="p-8 text-xs">{JSON.stringify(validation.errors, null, 2)}</pre>
-    )
+  if (!validation.ok || !manifest) {
+    return <pre className="p-8 text-xs">{JSON.stringify(validation.errors, null, 2)}</pre>
   }
 
-  const manifest = validation.manifest
-  const format = manifest.formats[0]
+  const format = manifest.formats.find((f) => f.key === formatKey) ?? manifest.formats[0]
   const variantSlot = manifest.slots.find((s) => s.type === 'variant')
   const options = variantSlot?.type === 'variant' ? variantSlot.options : []
+  const imageSlots = manifest.slots.filter((s) => s.type === 'image')
+  const content: RenderContent = {
+    values: sampleValues,
+    variant: variant ?? undefined,
+    images: Object.fromEntries(imageSlots.map((s) => [s.key, testImage])),
+    pageNumber: 1,
+  }
 
   async function doCapture(ratio: 1 | 2) {
     if (!rootRef.current) return
@@ -104,7 +126,27 @@ export function RenderHarnessPage() {
 
   return (
     <div className="flex flex-col gap-4 p-6" data-testid="render-harness">
-      <h1 className="text-xl font-bold">Harness do motor de render — {manifest.name}</h1>
+      <h1 className="text-xl font-bold">
+        Harness do motor — {manifest.name}{' '}
+        <span className="text-sm font-normal text-ink-muted">({pkg})</span>
+      </h1>
+
+      {manifest.formats.length > 1 ? (
+        <div className="flex flex-wrap gap-1">
+          {manifest.formats.map((f) => (
+            <button
+              key={f.key}
+              type="button"
+              onClick={() => setFormatKey(f.key)}
+              className={`cursor-pointer rounded-full px-3 py-1.5 text-xs font-medium ${
+                format.key === f.key ? 'bg-accent-slides text-white' : 'bg-ink/5 hover:bg-ink/10'
+              }`}
+            >
+              {f.key} ({f.width}×{f.height})
+            </button>
+          ))}
+        </div>
+      ) : null}
 
       <div className="flex flex-wrap gap-1">
         {options.map((opt) => (
@@ -113,7 +155,9 @@ export function RenderHarnessPage() {
             type="button"
             onClick={() => setVariant(opt)}
             className={`cursor-pointer rounded-full px-3 py-1.5 text-xs font-medium ${
-              variant === opt ? 'bg-ink text-white' : 'bg-ink/5 text-ink hover:bg-ink/10'
+              (variant ?? (variantSlot?.type === 'variant' && variantSlot.default)) === opt
+                ? 'bg-ink text-white'
+                : 'bg-ink/5 text-ink hover:bg-ink/10'
             }`}
           >
             {opt}
@@ -123,13 +167,14 @@ export function RenderHarnessPage() {
 
       <div className="max-w-4xl rounded-(--radius-card) border border-hairline bg-white p-2 shadow-(--shadow-soft)">
         <TemplateRenderer
+          key={`${pkg}-${format.key}`}
           manifest={manifest}
           layoutHtml={validation.layouts[format.key]}
           styles={validation.styles}
           resourceUrls={resourceUrls}
           width={format.width}
           height={format.height}
-          content={{ ...SAMPLE_CONTENT, variant, images: { imagem: testImage } }}
+          content={content}
           onRootReady={(root) => {
             rootRef.current = root
           }}

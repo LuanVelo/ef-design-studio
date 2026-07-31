@@ -67,14 +67,14 @@
 - [x] Captura: `html-to-image` no raiz do iframe, `pixelRatio` 1 e 2, tempo medido. Verificado no harness `/dev/render`: @2x 3840×2160 em ~170ms (RNF-1 ok). Obs.: captura exige aba visível (página `hidden` não rasteriza — irrelevante em uso real).
 - **Aceite:** render de um layout fixture com todos os tipos de slot; captura @2x pixel-perfect comparada com screenshot manual do Chrome.
 
-### F1.4 Templates fixture (3 pacotes feitos à mão)
-- [ ] `ef-social-basico`: stories + feed-square + feed-portrait + carousel-square, todos os tipos de slot, 3 variants.
-- [ ] `ef-slides-basico`: slide-16x9, variants capa/conteúdo-bullets/imagem-texto/fechamento, `page-group`.
-- [ ] `ef-pdf-basico`: pdf-a4-portrait, header/footer, slot `page-number`.
-- [ ] Cada um com README completo no formato fixo; guardar fontes (Inter subsets WOFF2) e thumbnail.
-- [ ] Colocar em `content/fixtures/` + exemplos de `content.json` e Markdown compatíveis.
-- **Aceite:** os 3 passam no validador F1.2 e renderizam no motor F1.3. Estes pacotes são o exemplo canônico para a IA.
-- **Fechar decisão §12.5:** limites do carousel (confirmar 2–10).
+### F1.4 Templates fixture (3 pacotes)
+- [x] `ef-social-basico`: stories + feed-square + feed-portrait + carousel-square (2–10), slots text/richtext/list/image/variant + 3 cores editáveis, 3 variants.
+- [x] Slides: coberto pelo `ef-slides-editorial-01` (template real aprovado, 12 variants) no lugar do "ef-slides-basico" planejado. (`page-group` validado no schema; template com page-group fica para quando o fluxo F4 exercitar o caso.)
+- [x] `ef-pdf-basico`: pdf-a4-portrait, header/footer, variants capa/conteudo, slot `page-number` automático.
+- [x] READMEs completos no formato fixo; Inter WOFF2 embutida; thumbnails (provisórios nos 2 novos — regenerar com captura real no F2).
+- [x] `content/fixtures/`: `proposta-slides.content.json`, `relatorio-pdf.content.json`, `proposta-slides.md`; fontes dos pacotes em `templates/`, dist em `templates/dist/`.
+- **Aceite:** ✅ os 3 passam no validador F1.2 e renderizam no motor F1.3 (testes automatizados + verificação DOM no navegador via `/dev/render?pkg=<id>`).
+- **Decisão §12.5 fechada:** carousel 2–10 páginas (no catálogo canônico e no manifest do social).
 
 ---
 
@@ -188,7 +188,7 @@
 | Fase | Status | Data |
 |---|---|---|
 | F0 | concluída — app público em https://luanvelo.github.io/ef-design-studio/ | 30/07/2026 |
-| F1 | não iniciada | — |
+| F1 | concluída (tag f1-done) | 30/07/2026 |
 | F2 | não iniciada | — |
 | F3 | não iniciada | — |
 | F4 | não iniciada | — |
