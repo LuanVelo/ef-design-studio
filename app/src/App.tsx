@@ -1,0 +1,26 @@
+import { Routes, Route } from 'react-router-dom'
+import { RequireAuth } from '@auth/RequireAuth'
+import { Shell } from '@components/Shell'
+import { HomePage } from '@features/home/HomePage'
+import { TemplatesPage } from '@features/manager/TemplatesPage'
+import { SocialPage } from '@features/social/SocialPage'
+import { SlidesPage } from '@features/slides/SlidesPage'
+import { LoginPage } from '@auth/LoginPage'
+
+function App() {
+  return (
+    <Routes>
+      <Route path="/login" element={<LoginPage />} />
+      <Route element={<RequireAuth />}>
+        <Route element={<Shell />}>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/templates" element={<TemplatesPage />} />
+          <Route path="/social" element={<SocialPage />} />
+          <Route path="/slides" element={<SlidesPage />} />
+        </Route>
+      </Route>
+    </Routes>
+  )
+}
+
+export default App

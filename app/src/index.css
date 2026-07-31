@@ -1,0 +1,60 @@
+@import '@fontsource-variable/inter';
+@import 'tailwindcss';
+
+/* Tokens de design — fonte: design/DIRETRIZES-UI.md §3 */
+@theme {
+  --font-sans: 'Inter Variable', 'Inter', system-ui, sans-serif;
+
+  /* Cromo */
+  --color-canvas: #ededea;
+  --color-surface: #f9f8f5;
+  --color-card: #ffffff;
+  --color-ink: #1a1a1a;
+  --color-ink-muted: #8a8a85;
+  --color-hairline: #e8e7e3;
+
+  /* Acentos de categoria */
+  --color-accent-social: #e8552d;
+  --color-accent-slides: #4e96a8;
+  --color-accent-pdf: #4c9c5e;
+
+  /* Paleta estendida R5 (tags, badges, empty states) */
+  --color-retro-laranja: #e8552d;
+  --color-retro-verde: #4c9c5e;
+  --color-retro-malva: #c4a0c0;
+  --color-retro-amarelo: #e4c93f;
+  --color-retro-ambar: #df8f3e;
+  --color-retro-gelo: #d6e8ee;
+  --color-retro-petroleo: #4e96a8;
+  --color-retro-lilas: #dcccea;
+  --color-retro-pessego: #f2cfa0;
+  --color-retro-rosa: #efc8c4;
+  --color-retro-ocre: #b8862c;
+  --color-retro-menta: #dfeed2;
+
+  /* Forma e profundidade */
+  --radius-card: 16px;
+  --radius-shell: 24px;
+  --radius-thumb: 10px;
+  --shadow-soft: 0 8px 30px rgb(0 0 0 / 0.08);
+  --shadow-lift: 0 12px 40px rgb(0 0 0 / 0.12);
+
+  /* Movimento */
+  --ease-out-app: cubic-bezier(0, 0, 0.2, 1);
+}
+
+@layer base {
+  html {
+    font-family: var(--font-sans);
+    color: var(--color-ink);
+    background: var(--color-canvas);
+    -webkit-font-smoothing: antialiased;
+  }
+}
+
+@utility text-meta {
+  /* Metadados padrão R5: caps pequenas, tracking largo */
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
