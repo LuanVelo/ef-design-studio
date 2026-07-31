@@ -1,22 +1,22 @@
-import { useEffect, useRef, useState, type DragEvent } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { Badge } from '@components/Badge'
+import { SlidesCanvas } from './SlidesCanvas'
 import { Card } from '@components/Card'
 import { EmptyState } from '@components/EmptyState'
 import { Modal } from '@components/Modal'
 import { PillButton } from '@components/PillButton'
 import { useDevice } from '@components/useDevice'
 import { useSession } from '@auth/session'
-import { createResourceUrls, TemplateRenderer } from '@core/render'
+import { createResourceUrls } from '@core/render'
 import { validateEftpl, type EftplValidationResult } from '@core/validate/eftpl'
 import { openFile } from '@data/fs-adapter'
 import { projectsRepo, templatesRepo } from '@data/repositories'
 import type { ProjectRecord, TemplateRecord } from '@data/types'
-import type { SlotValue, TemplateManifest } from '@core/schemas'
+
 import {
   buildContentPrompt,
   matchContentToTemplate,
-  missingRequiredKeys,
   parseContentJson,
   parseMarkdownContent,
 } from './content-import'
@@ -26,8 +26,6 @@ import {
   slidesDataOf,
   type SlidesProjectData,
 } from './slides-project'
-
-const UNMAPPED_MIME = 'application/x-ef-unmapped'
 
 /** Editor de apresentação (F4.1: entrada de conteúdo + rascunho com mapeamento). */
 export function SlidesEditorPage() {
@@ -215,7 +213,7 @@ export function SlidesEditorPage() {
           ) : null}
         </Card>
       ) : (
-        <SlidesDraft
+        <SlidesCanvas
           manifest={manifest}
           validation={validation}
           resourceUrls={resourceUrls}
@@ -240,192 +238,6 @@ export function SlidesEditorPage() {
           </div>
         </div>
       </Modal>
-    </div>
-  )
-}
-
-/** Rascunho F4.1: slides com campos mapeáveis + painel "Conteúdo não mapeado". */
-function SlidesDraft({
-  manifest,
-  validation,
-  resourceUrls,
-  formatKey,
-  data,
-  onChange,
-}: {
-  manifest: TemplateManifest
-  validation: EftplValidationResult
-  resourceUrls: Record<string, string>
-  formatKey: string
-  data: SlidesProjectData
-  onChange: (patch: Partial<SlidesProjectData>) => void
-}) {
-  const format = manifest.formats.find((f) => f.key === formatKey)!
-  const slides = data.slides ?? []
-  const variantSlot = manifest.slots.find((s) => s.type === 'variant')
-  const textSlots = manifest.slots.filter(
-    (s) => s.type === 'text' || s.type === 'richtext' || s.type === 'list',
-  )
-
-  function updateSlide(index: number, patch: Partial<(typeof slides)[number]>) {
-    const next = slides.map((s, i) =>
-      i === index ? { ...s, ...patch, values: { ...s.values, ...patch.values } } : s,
-    )
-    onChange({ slides: next })
-  }
-
-  function dropUnmapped(e: DragEvent, slideIndex: number, slotKey: string) {
-    e.preventDefault()
-    const raw = e.dataTransfer.getData(UNMAPPED_MIME)
-    if (!raw) return
-    const itemIndex = Number(raw)
-    const item = data.unmapped[itemIndex]
-    if (!item) return
-    const slot = manifest.slots.find((s) => s.key === slotKey)
-    if (!slot) return
-    let value: SlotValue = item.value
-    if (slot.type === 'list') value = Array.isArray(value) ? value : [String(value)]
-    else value = Array.isArray(value) ? value.join('\n') : value
-    const next = slides.map((s, i) =>
-      i === slideIndex ? { ...s, values: { ...s.values, [slotKey]: value } } : s,
-    )
-    onChange({ slides: next, unmapped: data.unmapped.filter((_, i) => i !== itemIndex) })
-  }
-
-  return (
-    <div className="grid grid-cols-1 gap-4 xl:grid-cols-[1fr_18rem]" data-testid="slides-draft">
-      <div className="flex flex-col gap-4">
-        <p className="text-sm text-ink-muted">
-          {slides.length} slides importados. O editor visual completo chega na F4.2 — aqui você já
-          revisa os textos, escolhe a variação e mapeia o conteúdo que sobrou.
-        </p>
-        {slides.map((slide, i) => {
-          const missing = missingRequiredKeys(slide, manifest)
-          return (
-            <Card bordered key={i} className="flex flex-col gap-3 p-4" data-testid="slide-card">
-              <div className="flex items-center justify-between gap-2">
-                <span className="text-meta font-semibold text-ink-muted uppercase">
-                  Slide {i + 1}
-                </span>
-                {missing.length > 0 ? (
-                  <span
-                    className="text-meta rounded-full bg-retro-amarelo px-2 py-0.5 text-ink"
-                    data-testid="missing-required"
-                  >
-                    faltam: {missing.join(', ')}
-                  </span>
-                ) : null}
-              </div>
-              <div className="flex flex-wrap gap-4">
-                <div className="w-64 shrink-0 overflow-hidden rounded-lg border border-hairline bg-white">
-                  <TemplateRenderer
-                    manifest={manifest}
-                    layoutHtml={validation.layouts[format.key]}
-                    styles={validation.styles}
-                    resourceUrls={resourceUrls}
-                    width={format.width}
-                    height={format.height}
-                    content={{
-                      values: slide.values,
-                      variant: slide.variant,
-                      colors: data.colors,
-                      images: slide.images,
-                      pageNumber: i + 1,
-                    }}
-                  />
-                </div>
-                <div className="flex min-w-0 flex-1 flex-col gap-2">
-                  {variantSlot?.type === 'variant' ? (
-                    <select
-                      value={slide.variant ?? variantSlot.default ?? variantSlot.options[0]}
-                      onChange={(e) => updateSlide(i, { variant: e.target.value })}
-                      aria-label={`Variação do slide ${i + 1}`}
-                      className="w-fit cursor-pointer rounded-full border border-ink/15 bg-card px-3 py-1.5 text-xs font-medium outline-none"
-                    >
-                      {variantSlot.options.map((opt) => (
-                        <option key={opt} value={opt}>
-                          {opt}
-                        </option>
-                      ))}
-                    </select>
-                  ) : null}
-                  {textSlots.map((slot) => {
-                    const raw = slide.values[slot.key]
-                    const isList = slot.type === 'list'
-                    const text = isList
-                      ? (Array.isArray(raw) ? raw : []).join('\n')
-                      : typeof raw === 'string'
-                        ? raw
-                        : ''
-                    return (
-                      <label
-                        key={slot.key}
-                        className="flex flex-col gap-1 rounded-lg border border-dashed border-transparent p-1 text-xs [&:has(.drop-over)]:border-ink/40"
-                        onDragOver={(e) => e.preventDefault()}
-                        onDrop={(e) => dropUnmapped(e, i, slot.key)}
-                        data-testid={`drop-${i}-${slot.key}`}
-                      >
-                        <span className="text-meta text-ink-muted uppercase">{slot.label}</span>
-                        <textarea
-                          value={text}
-                          rows={isList ? 3 : text.length > 80 ? 3 : 1}
-                          onChange={(e) =>
-                            updateSlide(i, {
-                              values: {
-                                [slot.key]: isList
-                                  ? e.target.value.split('\n').filter((l) => l !== '')
-                                  : e.target.value,
-                              },
-                            })
-                          }
-                          className="resize-y rounded-lg border border-ink/15 bg-card px-2.5 py-1.5 text-sm outline-none focus:border-ink/40"
-                        />
-                      </label>
-                    )
-                  })}
-                </div>
-              </div>
-            </Card>
-          )
-        })}
-      </div>
-
-      <aside className="xl:sticky xl:top-4 xl:self-start">
-        <Card bordered className="flex flex-col gap-3 p-4" data-testid="unmapped-panel">
-          <h2 className="text-meta font-semibold text-ink-muted uppercase">
-            Conteúdo não mapeado
-          </h2>
-          {data.unmapped.length === 0 ? (
-            <p className="text-xs text-ink-muted">
-              Tudo mapeado. Itens que não casarem com os slots do template aparecem aqui.
-            </p>
-          ) : (
-            <>
-              <p className="text-xs text-ink-muted">
-                Arraste um item para o campo de um slide.
-              </p>
-              <ul className="flex flex-col gap-1.5">
-                {data.unmapped.map((item, i) => (
-                  <li
-                    key={`${item.slideIndex}-${item.key}-${i}`}
-                    draggable
-                    onDragStart={(e) => e.dataTransfer.setData(UNMAPPED_MIME, String(i))}
-                    className="cursor-grab rounded-lg border border-hairline bg-surface px-2.5 py-1.5 text-xs"
-                    data-testid="unmapped-item"
-                  >
-                    <span className="text-meta block text-ink-muted uppercase">
-                      slide {item.slideIndex + 1} · {item.key}
-                    </span>
-                    <span className="line-clamp-2">
-                      {Array.isArray(item.value) ? item.value.join(' · ') : item.value}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            </>
-          )}
-        </Card>
-      </aside>
     </div>
   )
 }

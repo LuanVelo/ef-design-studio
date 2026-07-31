@@ -10,6 +10,8 @@ export type RenderContent = {
   colors?: Record<string, string>
   /** slot de imagem key → URL utilizável (object/data URL) */
   images?: Record<string, string>
+  /** ajuste da imagem dentro do frame: pan (0–100%) + zoom (≥1) */
+  imageTransforms?: Record<string, { x: number; y: number; scale: number }>
   /** número da página (slot especial page-number em templates PDF) */
   pageNumber?: number
 }
@@ -78,6 +80,14 @@ export function applyContent(
         img.style.height = '100%'
         img.style.objectFit = slot.fit
         img.style.display = 'block'
+        const t = content.imageTransforms?.[slot.key]
+        if (t) {
+          img.style.objectPosition = `${t.x}% ${t.y}%`
+          if (t.scale !== 1) {
+            img.style.transform = `scale(${t.scale})`
+            img.style.transformOrigin = `${t.x}% ${t.y}%`
+          }
+        }
         el.appendChild(img)
       }
       setEmptyState(el, !url)

@@ -3,11 +3,13 @@ import { projectsRepo, templatesRepo } from '@data/repositories'
 import type { ProjectRecord, TemplateRecord } from '@data/types'
 import { nowIso } from '@data/repository'
 
-/** Conteúdo de um slide: variant + valores por slot + imagens (dataURL). */
+/** Conteúdo de um slide: variant + valores por slot + imagens (dataURL) + ajuste de enquadramento. */
 export type SlideContent = {
   variant?: string
   values: Record<string, SlotValue>
   images: Record<string, string>
+  /** pan (0–100%) e zoom (≥1) da imagem dentro do frame, por slot */
+  imageTransforms?: Record<string, { x: number; y: number; scale: number }>
 }
 
 export function emptySlide(): SlideContent {

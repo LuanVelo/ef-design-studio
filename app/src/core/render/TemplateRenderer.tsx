@@ -16,7 +16,9 @@ export type TemplateRendererProps = {
   content: RenderContent
   /** Escala externa (ex.: 0.3 para thumbnail). Default: ajusta à largura do container. */
   scale?: number
-  /** Recebe o elemento raiz do layout dentro do iframe (para captura) */
+  /** Permite interação com o conteúdo do iframe (edição inline no editor de slides) */
+  interactive?: boolean
+  /** Recebe o elemento raiz do layout dentro do iframe (para captura/edição) */
   onRootReady?: (root: HTMLElement, iframeDoc: Document) => void
 }
 
@@ -33,6 +35,7 @@ export function TemplateRenderer({
   height,
   content,
   scale,
+  interactive,
   onRootReady,
 }: TemplateRendererProps) {
   const iframeRef = useRef<HTMLIFrameElement>(null)
@@ -90,7 +93,7 @@ export function TemplateRenderer({
           border: 0,
           transform: `scale(${fitScale})`,
           transformOrigin: 'top left',
-          pointerEvents: 'none',
+          pointerEvents: interactive ? 'auto' : 'none',
         }}
       />
     </div>

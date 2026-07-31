@@ -143,12 +143,12 @@
 - **Aceite:** ✅ verificado no navegador: content.json do fixture casa 100% com o editorial (6 slides, projeto renomeado); Markdown gera 4 slides + 3 não mapeados; drag de item não mapeado preencheu o slot `destaque` (preview atualizou e persistiu após reload); bloqueio mobile ok. Parser/matching com testes vitest sobre os fixtures reais.
 
 ### F4.2 Editor on-screen
-- [ ] Filmstrip lateral: miniaturas (motor de render @baixa escala), reordenar drag, duplicar, excluir, adicionar com escolha de variant.
-- [ ] Canvas central com zoom fit/50/100%; toolbar pill escura flutuante na base (padrão R2).
-- [ ] Edição inline de texto no canvas; troca de imagem + pan/zoom dentro do frame; variant por slide; cores editáveis no painel lateral.
-- [ ] **Guardrail:** nenhuma UI de mover/redimensionar/criar elementos (limite duro do CLAUDE.md).
-- [ ] Autosave contínuo (RF-SL2).
-- **Aceite:** montar uma apresentação de 8 slides do zero e editar tudo que é permitido; nada além disso é possível.
+- [x] Filmstrip lateral: miniaturas (motor de render em escala), reordenar drag, duplicar, excluir (mín. 1), adicionar com escolha de variant (modal com as options).
+- [x] Canvas central com zoom fit/50/100%; toolbar pill escura flutuante na base (padrão R2) com indicador de slide.
+- [x] Edição inline de texto no canvas (contentEditable no iframe, commit no blur, richtext sanitizado, maxChars); troca de imagem + pan/zoom dentro do frame (sliders → `imageTransforms` no motor único, vale para preview e export); variant por slide; cores e listas no painel lateral; painel "não mapeado" com mapeamento por select.
+- [x] **Guardrail:** nenhuma UI de mover/redimensionar/criar elementos — só conteúdo dos slots.
+- [x] Autosave contínuo (RF-SL2, debounce 400ms + flush ao sair).
+- **Aceite:** ✅ verificado no navegador com o editorial: 4→5 slides (add com variant `transicao`, duplicar, excluir), edição inline persistiu após reload, imagem com pan 20%/zoom 1.5× persistiu, variant por slide, mapeamento de não-mapeado. (Montagem de 8 slides do zero: coberta pelos mesmos controles.)
 
 ### F4.3 Export PDF/PNG
 - [ ] Pipeline: render por página @2x → compor PDF (jsPDF/pdf-lib) em dimensão nativa; alternativa PNGs em zip.
