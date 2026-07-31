@@ -112,11 +112,11 @@
 ## F3 — Social Templates
 
 ### F3.1 Wizard: estrutura + etapas 1–2
-- [ ] Wizard linear com navegação livre entre etapas (stepper no topo).
-- [ ] Etapa 1: seletor de template = modal padrão R8 (sidebar de filtros + grid), só `category: social` e status ativo/novo/recente.
-- [ ] Etapa 2: multi-seleção de formatos suportados pelo template.
-- [ ] Criar `Project` (status `rascunho`) já na entrada; autosave em cada mudança (RF-S2).
-- **Aceite:** criar projeto, fechar o app, reabrir e retomar de "Meus projetos".
+- [x] Wizard linear com navegação livre entre etapas (stepper no topo); nome do projeto editável inline; indicador "Salvo automaticamente".
+- [x] Etapa 1: seletor de template = modal padrão R8 (`TemplateSelectorModal`, reutilizável na F4: sidebar busca+status+ajuda, grid com hover "Usar"), só `category: social` e status ativo/novo/recente, maior versão por id; etapa 1 do wizard mostra o template com aviso "versão mais nova disponível" (RF-G4) e permite trocar.
+- [x] Etapa 2: multi-seleção de formatos do manifest (obrigatório ≥1 para avançar); etapas 3–4 com placeholder até F3.2/F3.3.
+- [x] `Project` rascunho criado na escolha do template (marca 1º uso: lastUsedAt + usageCount); autosave em cada mudança (RF-S2); "Meus projetos" com cards R4 (thumbnail, "editado há X", badge rascunho/finalizado).
+- **Aceite:** ✅ verificado no navegador: criar projeto → selecionar formatos → recarregar o app → retomar de "Meus projetos" na etapa e com os formatos salvos. Testes vitest de criação/autosave/listagem/retomada.
 
 ### F3.2 Etapa 3: conteúdo + preview
 - [ ] Formulário gerado dos slots do manifest (componente por tipo de slot: text com contador de chars, richtext restrito, upload de imagem com compressão máx 2560px/webp, variant, color, list).

@@ -37,7 +37,7 @@ describe('App shell e rotas', () => {
 
   it.each([
     ['/templates', /seus templates moram aqui/i],
-    ['/social', /social templates/i],
+    ['/social', /peça social/i],
     ['/slides', /slides & pdf/i],
   ])('renderiza %s', async (path, heading) => {
     renderAt(path)
