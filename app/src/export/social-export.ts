@@ -81,7 +81,7 @@ export async function toJpeg(blob: Blob, width: number, height: number): Promise
 }
 
 /** Renderiza um formato num iframe fora da tela e captura (motor único F1.3). */
-async function renderAndCapture(args: {
+export async function renderAndCapture(args: {
   manifest: TemplateManifest
   validation: EftplValidationResult
   resourceUrls: Record<string, string>

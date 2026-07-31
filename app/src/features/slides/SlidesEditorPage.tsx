@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { Badge } from '@components/Badge'
 import { SlidesCanvas } from './SlidesCanvas'
+import { SlidesExportDialog } from './SlidesExportDialog'
 import { Card } from '@components/Card'
 import { EmptyState } from '@components/EmptyState'
 import { Modal } from '@components/Modal'
@@ -39,6 +40,7 @@ export function SlidesEditorPage() {
   const [savedAt, setSavedAt] = useState<string | null>(null)
   const [entryError, setEntryError] = useState<string | null>(null)
   const [promptOpen, setPromptOpen] = useState(false)
+  const [exportOpen, setExportOpen] = useState(false)
   const [copied, setCopied] = useState(false)
   const persistTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
   const pendingRef = useRef<ProjectRecord | null>(null)
@@ -163,12 +165,19 @@ export function SlidesEditorPage() {
         <span className="text-meta text-ink-muted uppercase">
           {template.name} · {format.key}
         </span>
-        {savedAt ? (
-          <span className="text-meta ml-auto text-ink-muted" data-testid="autosave-indicator">
-            Salvo automaticamente ·{' '}
-            {new Date(savedAt).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
-          </span>
-        ) : null}
+        <span className="ml-auto flex items-center gap-3">
+          {savedAt ? (
+            <span className="text-meta text-ink-muted" data-testid="autosave-indicator">
+              Salvo automaticamente ·{' '}
+              {new Date(savedAt).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
+            </span>
+          ) : null}
+          {data.slides !== null ? (
+            <PillButton onClick={() => setExportOpen(true)} data-testid="open-export">
+              Exportar
+            </PillButton>
+          ) : null}
+        </span>
       </div>
 
       <h1 className="text-2xl font-bold tracking-tight">{project.name}</h1>
@@ -222,6 +231,20 @@ export function SlidesEditorPage() {
           onChange={(patch) => save(patch)}
         />
       )}
+
+      <SlidesExportDialog
+        open={exportOpen}
+        onClose={() => setExportOpen(false)}
+        project={project}
+        template={template}
+        validation={validation}
+        resourceUrls={resourceUrls}
+        data={data}
+        onFinalized={(updated) => {
+          setProject(updated)
+          setSavedAt(updated.updatedAt)
+        }}
+      />
 
       <Modal open={promptOpen} onClose={() => setPromptOpen(false)} title="Prompt para IA" maxWidth="max-w-2xl">
         <div className="flex flex-col gap-4">

@@ -171,9 +171,9 @@ Template = HTML+CSS autocontido renderizado em **iframe sandboxed** (`sandbox="a
 | F0 | Fundação: scaffold, Dexie, login local, PWA, deploy | ✅ concluída |
 | F1 | Contrato: schemas zod, validador, motor de render, templates fixture | ✅ concluída |
 | F2 | Gerenciador de templates | ✅ concluída |
-| F3 | Social (wizard + export + mobile) | ⬅️ atual |
-| F4 | Slides + PDF (upload conteúdo, editor, export PDF) | pendente |
-| F5 | Robustez: backup, cripto, undo, gestão de espaço, polish | pendente |
+| F3 | Social (wizard + export + mobile) | implementada (aceite de export com o usuário) |
+| F4 | Slides + PDF (upload conteúdo, editor, export PDF) | implementada (aceite de export com o usuário) |
+| F5 | Robustez: backup, cripto, undo, gestão de espaço, polish | ⬅️ próxima (junto da rodada de UX/UI) |
 
 Cada fase termina com o app utilizável de ponta a ponta no que já existe. Detalhe passo a passo em [Instructions/PLANO.md](Instructions/PLANO.md) — manter o status de lá atualizado ao concluir etapas.
 

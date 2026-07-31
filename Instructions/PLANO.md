@@ -151,10 +151,10 @@
 - **Aceite:** ✅ verificado no navegador com o editorial: 4→5 slides (add com variant `transicao`, duplicar, excluir), edição inline persistiu após reload, imagem com pan 20%/zoom 1.5× persistiu, variant por slide, mapeamento de não-mapeado. (Montagem de 8 slides do zero: coberta pelos mesmos controles.)
 
 ### F4.3 Export PDF/PNG
-- [ ] Pipeline: render por página @2x → compor PDF (jsPDF/pdf-lib) em dimensão nativa; alternativa PNGs em zip.
-- [ ] Slot `page-number` preenchido automaticamente nos templates PDF.
-- [ ] Fluxo PDF completo = fluxo Slides com formatos `pdf-a4-*` (sem UI separada além do filtro).
-- **Aceite:** PDF de 10+ páginas com fidelidade visual ao preview; numeração automática correta no fixture PDF.
+- [x] Pipeline: render por página @2x → compor PDF (pdf-lib) em dimensão nativa (px 96dpi → pt 72dpi); alternativa PNGs numerados em zip (@1x/@2x); registro em exports_history + projeto finalizado; guard de aba oculta.
+- [x] Slot `page-number` preenchido automaticamente (motor único via content.pageNumber por página).
+- [x] Fluxo PDF completo = fluxo Slides com formatos `pdf-a4-*` (seletor multi-categoria, sem UI separada).
+- **Aceite:** ⚠️ dialog/opções/guard verificados no navegador; captura final (fidelidade do PDF + numeração no fixture) pendente de aba visível — item do roteiro de testes do usuário.
 
 ---
 
@@ -190,6 +190,6 @@
 | F0 | concluída — app público em https://luanvelo.github.io/ef-design-studio/ | 30/07/2026 |
 | F1 | concluída (tag f1-done) | 30/07/2026 |
 | F2 | concluída (tag f2-done) | 31/07/2026 |
-| F3 | não iniciada | — |
-| F4 | não iniciada | — |
+| F3 | implementada — aceite de export pendente do teste do usuário (aba visível/celular); tag f3-done após | 31/07/2026 |
+| F4 | implementada — aceite de export PDF pendente do teste do usuário; tag f4-done após | 31/07/2026 |
 | F5 | não iniciada | — |
