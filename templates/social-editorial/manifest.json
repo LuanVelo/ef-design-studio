@@ -1,0 +1,48 @@
+{
+  "schemaVersion": 1,
+  "id": "ef-social-editorial-01",
+  "name": "Social Editorial",
+  "category": "social",
+  "version": "1.0.0",
+  "author": "Claude",
+  "createdWith": "claude-opus-5",
+  "description": "Template social da marca Espíndola Fonseca: fundo azul-marinho, manchete em serifada de alto contraste no topo, logo na base e faixa dourada de rodapé. Composição editorial de peça única, sem imagem.",
+  "tags": ["editorial", "institucional", "escuro", "manchete", "juridico"],
+  "formats": [
+    {
+      "key": "feed-square",
+      "file": "layouts/feed-square.html",
+      "width": 1080,
+      "height": 1080,
+      "pages": "single"
+    }
+  ],
+  "slots": [
+    {
+      "key": "layout-variant",
+      "type": "variant",
+      "label": "Variação de layout",
+      "options": ["manchete"],
+      "default": "manchete"
+    },
+    {
+      "key": "titulo",
+      "type": "text",
+      "label": "Manchete",
+      "required": true,
+      "maxChars": 140,
+      "multiline": true
+    }
+  ],
+  "fonts": [
+    { "family": "Playfair Display", "file": "fonts/playfair-display-var.woff2", "license": "OFL" }
+  ],
+  "colors": {
+    "editable": [
+      { "key": "cor-fundo", "label": "Cor de fundo", "default": "#01233C" },
+      { "key": "cor-texto", "label": "Cor do texto", "default": "#F7F7F7" },
+      { "key": "cor-marca", "label": "Cor da marca (logo)", "default": "#BEA57C" },
+      { "key": "cor-faixa", "label": "Cor da faixa de rodapé", "default": "#C6B08C" }
+    ]
+  }
+}

@@ -1,0 +1,120 @@
+/* ============================================================
+   Social Editorial — base.css
+   Marca Espíndola Fonseca. Canvas de dimensão fixa por formato;
+   os blocos são caixas em coordenadas absolutas, espelhando o
+   Figma "Social Media template" (node 13:5).
+   Variações controladas por classes .variant-* no raiz .peca.
+   ============================================================ */
+
+@font-face {
+  font-family: "Playfair Display";
+  src: url("../fonts/playfair-display-var.woff2") format("woff2");
+  font-weight: 400 900;
+  font-style: normal;
+  font-display: block;
+}
+
+body {
+  margin: 0;
+}
+
+.peca {
+  /* Cores editáveis do template (sobrescritas pelo app) */
+  --cor-fundo: #01233c;
+  --cor-texto: #f7f7f7;
+  --cor-marca: #bea57c;
+  --cor-faixa: #c6b08c;
+
+  /* Métricas do grid editorial (Figma) */
+  --margem: 72px;
+  --topo-titulo: 128px;
+  --altura-faixa: 61px;
+
+  position: relative;
+  overflow: hidden;
+  background: var(--cor-fundo);
+  color: var(--cor-texto);
+  font-family: "Playfair Display", Georgia, "Times New Roman", serif;
+  box-sizing: border-box;
+}
+
+.peca *,
+.peca *::before,
+.peca *::after {
+  box-sizing: border-box;
+  margin: 0;
+}
+
+/* Dimensões exatas por formato */
+.formato-feed-square { width: 1080px; height: 1080px; }
+
+/* ---------- Blocos ---------- */
+
+/* Área de conteúdo: tudo acima da faixa de rodapé */
+.conteudo {
+  position: absolute;
+  inset: 0 0 var(--altura-faixa) 0;
+  overflow: hidden;
+}
+
+/* Manchete: caixa de altura fixa, texto ancorado no topo e recortado
+   se estourar (equivalente ao overflow-clip do frame H1 no Figma). */
+.slot-titulo {
+  position: absolute;
+  top: var(--topo-titulo);
+  left: var(--margem);
+  right: var(--margem);
+  height: 565px;
+  overflow: hidden;
+  font-size: 72px;
+  font-weight: 400;
+  line-height: 1.2;
+  letter-spacing: 0;
+  overflow-wrap: break-word;
+  white-space: pre-line;
+}
+
+/* Lockup da marca, ancorado na base da área de conteúdo.
+   A caixa de 414×234.337 é o componente "Logo" do Figma; o desenho
+   ocupa uma área interna menor (mesmos insets do componente). */
+.logo {
+  position: absolute;
+  left: var(--margem);
+  bottom: 0;
+  width: 414px;
+  height: 234.337px;
+  overflow: hidden;
+}
+
+.logo-marca {
+  position: absolute;
+  top: 14.36%;
+  left: 8.13%;
+  width: 83.68%;
+  height: 71.23%;
+  display: block;
+}
+
+/* Faixa de rodapé */
+.faixa {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: var(--altura-faixa);
+  background: var(--cor-faixa);
+}
+
+/* Slot obrigatório vazio: nada a esconder, mas mantém a caixa fora
+   do fluxo visual quando o app renderiza a peça sem conteúdo. */
+.slot-titulo.slot-empty,
+.slot-titulo:empty {
+  visibility: hidden;
+}
+
+/* ---------- Variações ---------- */
+
+/* manchete: composição padrão (título no topo, marca na base). */
+.variant-manchete .slot-titulo {
+  top: var(--topo-titulo);
+}

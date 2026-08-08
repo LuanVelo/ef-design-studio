@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Preview — Social Editorial</title>
+<style>
+  :root { color-scheme: dark; }
+  * { box-sizing: border-box; margin: 0; }
+  body {
+    font-family: system-ui, sans-serif;
+    background: #1e1e22;
+    color: #eee;
+    display: flex;
+    height: 100vh;
+    overflow: hidden;
+  }
+  aside { width: 300px; flex-shrink: 0; overflow-y: auto; background: #26262b; padding: 16px; }
+  aside h1 { font-size: 14px; text-transform: uppercase; letter-spacing: 1px; color: #999; margin-bottom: 12px; }
+  aside button {
+    display: block; width: 100%; text-align: left; padding: 8px 10px; margin-bottom: 4px;
+    background: transparent; color: #ddd; border: 1px solid transparent; border-radius: 6px;
+    cursor: pointer; font-size: 13px;
+  }
+  aside button:hover { background: #333; }
+  aside button.active { background: #3a3a44; border-color: #666; }
+  aside label { display: flex; gap: 8px; align-items: center; font-size: 13px; margin: 12px 0 8px; color: #bbb; }
+  aside hr { border-color: #333; margin: 12px 0; }
+  main { flex: 1; display: flex; align-items: center; justify-content: center; overflow: auto; padding: 24px; }
+  #stage { position: relative; }
+  #stage iframe {
+    width: 1080px; height: 1080px; border: 0; background: #fff;
+    transform-origin: top left; display: block; box-shadow: 0 8px 40px rgba(0,0,0,.5);
+  }
+</style>
+</head>
+<body>
+<aside>
+  <h1>Social Editorial</h1>
+  <div id="variant-buttons"></div>
+  <hr>
+  <label><input type="checkbox" id="chk-limite"> Texto no limite (140 caracteres)</label>
+  <label><input type="checkbox" id="chk-curto"> Manchete curta (1 linha)</label>
+  <label><input type="checkbox" id="chk-vazio"> Slot vazio</label>
+</aside>
+<main><div id="stage"><iframe id="frame" src="../layouts/feed-square.html"></iframe></div></main>
+
+<script>
+const VARIANTS = ["manchete"];
+
+const SAMPLE = {
+  "titulo": "Vulgarização do termo “facista” afasta injúria em texto jornalístico"
+};
+// 140 caracteres — limite do maxChars do manifest
+const LIMITE = {
+  "titulo": "Decisão do Superior Tribunal reconhece o direito de crítica em publicação jornalística e afasta a condenação por danos morais no caso"
+};
+const CURTO = { "titulo": "Direito de crítica" };
+
+function inject(doc, variant, opts) {
+  const root = doc.querySelector(".peca");
+  if (!root) return;
+  root.className = "peca formato-feed-square variant-" + variant;
+  const data = opts.vazio ? { titulo: "" }
+    : opts.limite ? LIMITE
+    : opts.curto ? CURTO
+    : SAMPLE;
+  for (const [key, value] of Object.entries(data)) {
+    const el = doc.querySelector('[data-slot="' + key + '"]');
+    if (!el) continue;
+    el.textContent = value;
+    el.classList.toggle("slot-empty", value.length === 0);
+  }
+}
+
+const params = new URLSearchParams(location.search);
+const BARE = params.get("bare") === "1";
+let current = VARIANTS.includes(params.get("variant")) ? params.get("variant") : VARIANTS[0];
+if (BARE) {
+  document.querySelector("aside").style.display = "none";
+  document.querySelector("main").style.padding = "0";
+  document.body.style.background = "#fff";
+}
+if (params.get("limite") === "1") document.getElementById("chk-limite").checked = true;
+if (params.get("curto") === "1") document.getElementById("chk-curto").checked = true;
+if (params.get("vazio") === "1") document.getElementById("chk-vazio").checked = true;
+
+const frame = document.getElementById("frame");
+const stage = document.getElementById("stage");
+const btnBox = document.getElementById("variant-buttons");
+
+function opts() {
+  return {
+    limite: document.getElementById("chk-limite").checked,
+    curto: document.getElementById("chk-curto").checked,
+    vazio: document.getElementById("chk-vazio").checked
+  };
+}
+
+function fitStage() {
+  if (BARE) frame.style.boxShadow = "none";
+  const scale = BARE
+    ? Math.min(innerWidth / 1080, innerHeight / 1080)
+    : Math.min((innerWidth - 350) / 1080, (innerHeight - 50) / 1080);
+  frame.style.transform = "scale(" + scale + ")";
+  stage.style.width = 1080 * scale + "px";
+  stage.style.height = 1080 * scale + "px";
+}
+
+function render() {
+  const doc = frame.contentDocument;
+  if (doc) inject(doc, current, opts());
+  document.querySelectorAll("#variant-buttons button").forEach(b =>
+    b.classList.toggle("active", b.dataset.v === current));
+  fitStage();
+}
+
+VARIANTS.forEach(v => {
+  const b = document.createElement("button");
+  b.textContent = v;
+  b.dataset.v = v;
+  b.onclick = () => { current = v; render(); };
+  btnBox.appendChild(b);
+});
+
+["chk-limite", "chk-curto", "chk-vazio"].forEach(id =>
+  document.getElementById(id).onchange = render);
+
+frame.addEventListener("load", render);
+addEventListener("resize", fitStage);
+</script>
+</body>
+</html>
