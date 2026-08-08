@@ -2,6 +2,7 @@ import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { db } from '@data/db'
+import { usersRepo } from '@data/repositories'
 import { LoginPage } from './LoginPage'
 import { useSession } from './session'
 
@@ -22,38 +23,46 @@ beforeEach(async () => {
   useSession.setState({ user: null, restoring: false })
 })
 
+/** O login está desligado por enquanto: clicar já entra, sem e-mail nem senha. */
 describe('LoginPage', () => {
-  it('sem usuários: modo criar com aviso de segurança; cria e entra', async () => {
+  it('o CTA entra direto, criando o perfil local na primeira vez', async () => {
     const user = userEvent.setup()
     renderLogin()
-    expect(await screen.findByRole('heading', { name: /crie seu perfil/i })).toBeInTheDocument()
-    expect(screen.getByText(/sobre a segurança/i)).toBeInTheDocument()
+    expect(await screen.findByRole('heading', { name: /design studio/i })).toBeInTheDocument()
+    expect(screen.queryByLabelText(/senha/i)).not.toBeInTheDocument()
 
-    await user.type(screen.getByLabelText(/nome de usuário/i), 'ana')
-    await user.type(screen.getByLabelText(/senha/i), 'segredo1')
-    await user.click(screen.getByRole('button', { name: /criar perfil/i }))
+    await user.click(screen.getByRole('button', { name: 'Fazer login' }))
 
-    expect(await screen.findByText('Home logada', undefined, { timeout: 10_000 })).toBeInTheDocument()
-    expect(useSession.getState().user?.username).toBe('ana')
+    expect(
+      await screen.findByText('Home logada', undefined, { timeout: 10_000 }),
+    ).toBeInTheDocument()
+    expect(useSession.getState().user).not.toBeNull()
+    expect(await usersRepo.listAll()).toHaveLength(1)
   }, 20_000)
 
-  it('com usuário existente: senha errada mostra erro, senha certa entra', async () => {
-    await useSession.getState().createAccount('bia', 'segredo1')
+  it('o "Login" do topo entra do mesmo jeito', async () => {
+    const user = userEvent.setup()
+    renderLogin()
+    await user.click(screen.getByRole('button', { name: /^login$/i }))
+
+    expect(
+      await screen.findByText('Home logada', undefined, { timeout: 10_000 }),
+    ).toBeInTheDocument()
+  }, 20_000)
+
+  it('reaproveita o perfil que já existe em vez de criar outro', async () => {
+    await useSession.getState().enterWithoutPassword()
+    const [primeiro] = await usersRepo.listAll()
     useSession.getState().logout()
 
     const user = userEvent.setup()
     renderLogin()
-    expect(await screen.findByRole('heading', { name: /bem-vindo de volta/i })).toBeInTheDocument()
+    await user.click(screen.getByRole('button', { name: 'Fazer login' }))
 
-    await user.type(screen.getByLabelText(/senha/i), 'errada')
-    await user.click(screen.getByRole('button', { name: /entrar/i }))
-    expect(await screen.findByRole('alert', undefined, { timeout: 10_000 })).toHaveTextContent(
-      /senha incorreta/i,
-    )
-
-    await user.clear(screen.getByLabelText(/senha/i))
-    await user.type(screen.getByLabelText(/senha/i), 'segredo1')
-    await user.click(screen.getByRole('button', { name: /entrar/i }))
-    expect(await screen.findByText('Home logada', undefined, { timeout: 10_000 })).toBeInTheDocument()
-  }, 40_000)
+    expect(
+      await screen.findByText('Home logada', undefined, { timeout: 10_000 }),
+    ).toBeInTheDocument()
+    expect(await usersRepo.listAll()).toHaveLength(1)
+    expect(useSession.getState().user?.id).toBe(primeiro.id)
+  }, 20_000)
 })

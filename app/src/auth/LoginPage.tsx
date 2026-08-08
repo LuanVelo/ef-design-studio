@@ -1,138 +1,181 @@
-import { useEffect, useState, type FormEvent } from 'react'
+import { useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useGSAP } from '@gsap/react'
+import { EspindolaLogo } from '@components/EspindolaLogo'
 import { PillButton } from '@components/PillButton'
-import { usersRepo } from '@data/repositories'
-import type { UserRecord } from '@data/types'
+import { TiltCard } from '@components/TiltCard'
+import { seedFixtureTemplates } from '@features/manager/seed-fixtures'
 import { useSession } from './session'
+import { buildFanTimeline } from './fan-animation'
+import heroRetrato from '../assets/hero-retrato.png'
 
-type Mode = 'login' | 'criar'
-
+/**
+ * Tela de entrada (Figma "Login / create user"): fundo navy→preto, headline
+ * de marca e um leque com três peças de exemplo.
+ *
+ * O login está desligado por enquanto (decisão de 02/08/2026): o CTA entra
+ * direto, sem e-mail nem senha. A checagem de credenciais continua pronta em
+ * `session.ts` para quando voltar a ser exigida.
+ */
 export function LoginPage() {
   const navigate = useNavigate()
-  const { login, createAccount } = useSession()
-  const [profiles, setProfiles] = useState<UserRecord[] | null>(null)
-  const [mode, setMode] = useState<Mode>('login')
-  const [username, setUsername] = useState('')
-  const [password, setPassword] = useState('')
+  const enterWithoutPassword = useSession((s) => s.enterWithoutPassword)
   const [error, setError] = useState<string | null>(null)
   const [busy, setBusy] = useState(false)
+  const fanRef = useRef<HTMLDivElement>(null)
 
-  useEffect(() => {
-    void usersRepo.listAll().then((users) => {
-      setProfiles(users)
-      if (users.length === 0) setMode('criar')
-      else setUsername(users[0].username)
-    })
-  }, [])
+  useGSAP(
+    () => {
+      if (fanRef.current) buildFanTimeline(fanRef.current)
+    },
+    { scope: fanRef },
+  )
 
-  async function onSubmit(e: FormEvent) {
-    e.preventDefault()
+  async function entrar() {
     setError(null)
     setBusy(true)
     try {
-      if (mode === 'criar') await createAccount(username, password)
-      else await login(username, password)
+      const user = await enterWithoutPassword()
+      // em dev, deixa os pacotes de exemplo prontos no primeiro acesso
+      await seedFixtureTemplates(user.id)
       navigate('/', { replace: true })
     } catch (err) {
       setError((err as Error).message)
-    } finally {
       setBusy(false)
     }
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-canvas p-4">
-      <div className="w-full max-w-lg rounded-(--radius-shell) bg-card p-8 shadow-(--shadow-soft) sm:p-10">
-        <div className="mb-8 text-center">
-          <h1 className="text-3xl font-bold tracking-tight">
-            {mode === 'criar' ? 'Crie seu perfil ✦' : 'Bem-vindo de volta ✦'}
-          </h1>
-          <p className="mt-2 text-sm text-ink-muted">
-            {mode === 'criar'
-              ? 'Seus dados ficam só neste navegador — nada vai para a internet.'
-              : 'Escolha seu perfil e entre com a senha.'}
-          </p>
-        </div>
-
-        <form onSubmit={onSubmit} className="flex flex-col gap-4">
-          {mode === 'login' && profiles && profiles.length > 0 ? (
-            <label className="flex flex-col gap-1.5">
-              <span className="text-meta font-semibold text-ink-muted">Perfil</span>
-              <select
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                className="rounded-xl border border-hairline bg-surface px-4 py-2.5 text-sm outline-none focus:border-ink/30"
-              >
-                {profiles.map((p) => (
-                  <option key={p.id} value={p.username}>
-                    {p.username}
-                  </option>
-                ))}
-              </select>
-            </label>
-          ) : (
-            <label className="flex flex-col gap-1.5">
-              <span className="text-meta font-semibold text-ink-muted">Nome de usuário</span>
-              <input
-                type="text"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                autoComplete="username"
-                className="rounded-xl border border-hairline bg-surface px-4 py-2.5 text-sm outline-none focus:border-ink/30"
-              />
-            </label>
-          )}
-
-          <label className="flex flex-col gap-1.5">
-            <span className="text-meta font-semibold text-ink-muted">Senha</span>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              autoComplete={mode === 'criar' ? 'new-password' : 'current-password'}
-              className="rounded-xl border border-hairline bg-surface px-4 py-2.5 text-sm outline-none focus:border-ink/30"
+    <div
+      className="flex min-h-screen flex-col items-center"
+      style={{ background: 'linear-gradient(180deg, #024373 0%, #131313 100%)' }}
+    >
+      <div className="flex w-full items-center justify-between px-6 py-6 text-brand-cream sm:px-12 lg:px-24">
+        <EspindolaLogo />
+        <button
+          type="button"
+          onClick={() => void entrar()}
+          disabled={busy}
+          className="flex cursor-pointer items-center gap-3 text-base text-brand-cream transition-opacity hover:opacity-80 disabled:opacity-50"
+          style={{ fontFamily: 'var(--font-nav)' }}
+        >
+          Login
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path
+              d="M4 12h14m0 0l-5-5m5 5l-5 5"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
             />
-          </label>
+          </svg>
+        </button>
+      </div>
 
-          {error ? (
-            <p role="alert" className="rounded-xl bg-retro-rosa px-4 py-2.5 text-sm text-ink">
-              {error}
-            </p>
-          ) : null}
+      <div className="flex flex-1 flex-col items-center justify-center gap-6 px-6 py-6">
+        <h1
+          className="text-center text-[clamp(56px,9vw,109px)] leading-[1.1] text-white"
+          style={{ fontFamily: 'var(--font-display)' }}
+        >
+          Design Studio
+        </h1>
 
-          <PillButton type="submit" disabled={busy} className="mt-2">
-            {busy ? 'Aguarde…' : mode === 'criar' ? 'Criar perfil' : 'Entrar'}
-          </PillButton>
-        </form>
+        <div ref={fanRef} className="relative h-[430px] w-[752px] max-w-full">
+          {/* Peça de exemplo — artigo (inclinada à esquerda) */}
+          <TiltCard
+            slot="left"
+            baseZ={10}
+            className="absolute left-0 top-6 flex h-[362px] w-[280px] flex-col overflow-hidden rounded-[10px] border border-[#e7ddce] bg-brand-navy-deep shadow-2xl"
+          >
+            <div className="flex flex-1 flex-col justify-end p-4 text-brand-light-text">
+              <EspindolaLogo className="scale-75 origin-top-left text-brand-cream" />
+              <p className="mt-auto text-[30px] leading-tight" style={{ fontFamily: 'var(--font-display-alt)' }}>
+                Vulgarização do termo “facista” afasta injúria em texto jornalístico
+              </p>
+              <span className="mt-6 flex size-6 items-center justify-center rounded-full border border-brand-cream text-[10px] text-brand-cream">
+                →
+              </span>
+            </div>
+            <div className="h-5 w-full bg-brand-gold" />
+          </TiltCard>
 
-        <div className="mt-6 text-center">
-          {profiles && profiles.length > 0 ? (
-            <button
-              type="button"
-              onClick={() => {
-                setMode(mode === 'criar' ? 'login' : 'criar')
-                setError(null)
-              }}
-              className="cursor-pointer text-sm text-ink-muted underline-offset-4 hover:underline"
+          {/* Peça de exemplo — lista numerada (inclinada à direita) */}
+          <TiltCard
+            slot="right"
+            baseZ={10}
+            className="absolute right-0 top-8 flex h-[362px] w-[280px] flex-col overflow-hidden rounded-[10px] border border-[#e7ddce] bg-[#cebc9d] shadow-2xl"
+          >
+            <div className="flex flex-1 flex-col gap-2 p-4 text-brand-navy">
+              <EspindolaLogo className="scale-75 origin-top-left" />
+              <ul className="mt-4 flex flex-col gap-2">
+                {[
+                  'Integração entre esferas',
+                  'Confissão e formalização com lastro',
+                  'Participação da vítima e transparência',
+                  'Padronização e controle interno',
+                ].map((item, i) => (
+                  <li
+                    key={item}
+                    className="flex items-center gap-3 border-b border-brand-navy-deep py-2"
+                  >
+                    <span className="text-[29px]" style={{ fontFamily: 'var(--font-display-alt)' }}>
+                      {String(i + 1).padStart(2, '0')}
+                    </span>
+                    <span className="text-[15px] leading-tight">{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div className="h-5 w-full bg-brand-navy" />
+          </TiltCard>
+
+          {/* Peça de exemplo — capa com retrato (centro, por cima).
+              Posição por `left` fixo (e não left-1/2 + -translate-x-1/2) para
+              o translate do Tailwind não brigar com o transform do GSAP. */}
+          <TiltCard
+            slot="center"
+            baseZ={20}
+            className="absolute left-[210px] top-0 h-[430px] w-[333px] overflow-hidden rounded-xl border border-[#e7ddce] shadow-2xl"
+            style={{ background: 'linear-gradient(180deg, #d6c7ad 0%, #e7ddce 100%)' }}
+          >
+            <img
+              src={heroRetrato}
+              alt=""
+              width={333}
+              height={413}
+              className="absolute bottom-0 left-0 w-full"
+            />
+            <div
+              className="absolute inset-x-0 bottom-0 h-[155px]"
+              style={{ background: 'linear-gradient(180deg, rgba(36,33,41,0) 10%, #242129 58%)' }}
+            />
+            <div className="absolute left-5 top-5 text-brand-navy-deep">
+              <EspindolaLogo />
+            </div>
+            <div
+              className="absolute inset-x-6 bottom-9 text-center text-[24px] leading-[1.1] text-brand-light-text"
+              style={{ fontFamily: 'var(--font-display)' }}
             >
-              {mode === 'criar' ? 'Já tenho um perfil' : 'Criar novo perfil'}
-            </button>
-          ) : null}
+              <p>Direito penal &amp;</p>
+              <p className="italic">Criminal compliance</p>
+            </div>
+          </TiltCard>
         </div>
 
-        <p className="mt-6 text-center">
-          <span className="text-meta text-ink-muted">EF Design Studio v{__APP_VERSION__}</span>
-        </p>
+        <PillButton variant="brand" onClick={() => void entrar()} disabled={busy}>
+          {busy ? 'Entrando…' : 'Fazer login'}
+        </PillButton>
 
-        {mode === 'criar' ? (
-          <p className="mt-2 rounded-xl bg-surface px-4 py-3 text-xs leading-relaxed text-ink-muted">
-            <strong className="text-ink">Sobre a segurança:</strong> este login protege seus
-            projetos de olhares casuais em um computador compartilhado, mas os dados ficam no
-            navegador e podem ser acessados por quem tem acesso total a esta máquina. Não use uma
-            senha que você usa em outros serviços. Se esquecer a senha, não há recuperação.
+        {error ? (
+          <p role="alert" className="rounded-full bg-retro-rosa px-4 py-2 text-sm text-ink">
+            {error}
           </p>
         ) : null}
       </div>
+
+      <p className="pb-4 text-center">
+        <span className="text-meta text-white/40">EF Design Studio v{__APP_VERSION__}</span>
+      </p>
     </div>
   )
 }

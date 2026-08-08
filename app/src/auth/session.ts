@@ -40,6 +40,13 @@ type SessionState = {
   restore: () => Promise<void>
   createAccount: (username: string, password: string) => Promise<UserRecord>
   login: (username: string, password: string) => Promise<UserRecord>
+  /**
+   * Entrada sem senha (decisão de 02/08/2026: o login fica desligado por
+   * enquanto — clicar em "Login" já acessa). Reaproveita o perfil local se
+   * existir, senão cria um sem credenciais. `createAccount`/`login` seguem
+   * intactos para quando o login voltar a ser exigido.
+   */
+  enterWithoutPassword: () => Promise<UserRecord>
   logout: () => void
   /** Renova a expiração por inatividade. Chamar em interações relevantes. */
   touch: () => void
@@ -85,6 +92,22 @@ export const useSession = create<SessionState>((set, get) => ({
     if (!user?.credentials) throw new Error('Perfil não encontrado.')
     const ok = await verifyPassword(password, user.credentials)
     if (!ok) throw new Error('Senha incorreta. Tente novamente.')
+    set({ user })
+    get().touch()
+    return user
+  },
+
+  enterWithoutPassword: async () => {
+    const existing = (await usersRepo.listAll())[0]
+    let user = existing
+    if (!user) {
+      const created = await usersRepo.create({
+        username: 'local',
+        ownerUserId: '', // preenchido abaixo com o próprio id
+        sessionTimeoutMinutes: DEFAULT_SESSION_TIMEOUT_MINUTES,
+      })
+      user = await usersRepo.update(created.id, { ownerUserId: created.id })
+    }
     set({ user })
     get().touch()
     return user
