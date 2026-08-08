@@ -18,7 +18,7 @@ Qualquer feature ou dependência que viole um destes princípios deve ser recusa
 
 ## Stack (fixa — não trocar sem atualizar o ESCOPO)
 
-React 18+ / TypeScript / Vite · Tailwind CSS · Zustand · Dexie.js (IndexedDB) · React Router · vite-plugin-pwa · html-to-image (export PNG/JPG) · jsPDF ou pdf-lib (PDF por composição de imagens) · JSZip (`.eftpl`/`.efbackup`) · WebCrypto PBKDF2+AES-GCM (login local e cripto de dados) · zod (schemas) · DOMPurify (sanitização de templates).
+React 18+ / TypeScript / Vite · Tailwind CSS · Zustand · Dexie.js (IndexedDB) · React Router · vite-plugin-pwa · html-to-image (export PNG/JPG) · jsPDF ou pdf-lib (PDF por composição de imagens) · JSZip (`.eftpl`/`.efbackup`) · WebCrypto PBKDF2+AES-GCM (login local e cripto de dados) · zod (schemas) · DOMPurify (sanitização de templates) · GSAP + `@gsap/react` (animações e interações do chrome do app — hover, drag-reorder, transições).
 
 ## Estrutura de pastas
 
@@ -171,7 +171,7 @@ Template = HTML+CSS autocontido renderizado em **iframe sandboxed** (`sandbox="a
 | F0 | Fundação: scaffold, Dexie, login local, PWA, deploy | ✅ concluída |
 | F1 | Contrato: schemas zod, validador, motor de render, templates fixture | ✅ concluída |
 | F2 | Gerenciador de templates | ✅ concluída |
-| F3 | Social (wizard + export + mobile) | implementada (aceite de export com o usuário) |
+| F3 | Social (wizard + export, desktop) | implementada (aceite de export com o usuário); mobile adiado para v2 (RF-S3, F6+) |
 | F4 | Slides + PDF (upload conteúdo, editor, export PDF) | implementada (aceite de export com o usuário) |
 | F5 | Robustez: backup, cripto, undo, gestão de espaço, polish | ⬅️ próxima (junto da rodada de UX/UI) |
 

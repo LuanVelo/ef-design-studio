@@ -50,6 +50,7 @@ A IA (Claude ou outra) participa do fluxo **por fora do app**: ela gera template
 | Roteamento | React Router | SPA padrão |
 | PWA | vite-plugin-pwa (Workbox) | Offline + instalável sem código extra |
 | Render de peças | HTML/CSS em iframe sandbox + captura por canvas | Templates são HTML/CSS; ver §4 |
+| Animação/interação | GSAP (+ `@gsap/react`) | Micro-interações do chrome do app (hover, drag-reorder, transições de modal); 100% gratuito (inclui Draggable/Flip), sem dependência de rede em runtime |
 | Export imagem | html-to-image (ou snapdom) | PNG/JPG em alta resolução via pixelRatio |
 | Export PDF | Renderização por página → jsPDF/pdf-lib compondo as imagens | Fidelidade visual total com o template |
 | Pacotes/zip | JSZip | Pacotes `.eftpl` e backups `.efbackup` |
@@ -343,7 +344,7 @@ Para slides e PDF, o usuário pede a uma IA externa que transforme seu material 
 
 - **RF-S1** Tudo do fluxo acima.
 - **RF-S2** Projetos salvos automaticamente como rascunho a cada alteração (autosave em IndexedDB); lista "Meus projetos" com retomada.
-- **RF-S3** **Mobile completo:** este fluxo inteiro deve funcionar em celular — layout empilhado (preview acima, formulário abaixo), upload de imagem da galeria, export via Web Share API quando disponível.
+- **RF-S3** ~~Mobile completo~~ — **adiado para v2** (2026-08-02): v1 foca em desktop, já que o app tende a um instalável (Tauri, §10 F6+). Especificação original mantida para quando for retomado: fluxo inteiro funcionando em celular — layout empilhado (preview acima, formulário abaixo), upload de imagem da galeria, export via Web Share API quando disponível.
 
 ### 7.3 Slides Templates
 
@@ -412,10 +413,10 @@ EF_deisgn/
 | **F0** | Fundação | Scaffold Vite+React+TS+Tailwind, Dexie, login local, PWA básico, deploy no Pages |
 | **F1** | Contrato de template | Schemas zod do manifest/content, validador de pacote, motor de render em iframe, 1 template de referência de cada categoria (feitos à mão, servem de fixture e de exemplo para a IA) |
 | **F2** | Gerenciador | Import/validação/preview, grid, status, versões, export `.eftpl`, gerador de prompt |
-| **F3** | Social | Wizard completo, export png/jpg/zip, mobile |
+| **F3** | Social | Wizard completo, export png/jpg/zip (desktop; mobile adiado, ver F6+) |
 | **F4** | Slides + PDF | Upload de conteúdo, matching, editor on-screen, export PDF |
 | **F5** | Robustez | Backup/restore, gestão de espaço, criptografia de dados, undo, polish |
-| **F6+** | Futuro | Tauri, slots `adjustable`, biblioteca de equipe via pasta sincronizada, temas de UI |
+| **F6+** | Futuro | Tauri, mobile (RF-S3), slots `adjustable`, biblioteca de equipe via pasta sincronizada, temas de UI |
 
 Cada fase termina com o app utilizável de ponta a ponta no que já existe (nada de fases só de infraestrutura após F0).
 
