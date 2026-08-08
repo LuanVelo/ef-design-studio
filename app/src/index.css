@@ -1,4 +1,5 @@
 @import '@fontsource-variable/inter';
+@import '@fontsource/roboto/400.css';
 @import 'tailwindcss';
 
 /* Tokens de design — fonte: design/DIRETRIZES-UI.md §3 */
@@ -12,6 +13,30 @@
   --color-ink: #1a1a1a;
   --color-ink-muted: #8a8a85;
   --color-hairline: #e8e7e3;
+
+  /*
+   * Tokens de marca (Espíndola Fonseca) — fonte: Figma "EF - Design studio"
+   * (fileKey Vly69eH7swsPlkoJdhLOqO). Usados só nas telas Login/Home/Tipo
+   * selecionado por enquanto; o resto do app segue nos tokens de cromo acima
+   * até a rodada de UX/UI (F5) alcançar essas telas.
+   */
+  --color-brand-navy: #024373; /* --background-dark / --dark */
+  --color-brand-navy-deep: #01233c; /* --azul/90 */
+  --color-brand-ink: #131313; /* --bg-black */
+  --color-brand-gold: #c6b08c; /* --ligh / 80 */
+  --color-brand-gold-hover: #d6c7ad; /* --light-hover */
+  --color-brand-paper: #f7f7f7; /* --bg-light */
+  --color-brand-cream: #fff6e7; /* --secondary/marrom-100 */
+  --color-brand-body: #2d2d2d; /* --p */
+  --color-brand-light-text: #e5e5e5; /* --p-invertido / --cinza/10 */
+  --color-brand-beige-from: #d6c7ad; /* --bege/60 */
+  --color-brand-beige-to: #e7ddce; /* --bege/40 */
+
+  /* Fontes de destaque — sem licença web confirmada ainda; fallback serifado
+     do sistema até os .woff2 da The Silver Editorial / Presti Display chegarem. */
+  --font-display: 'The Silver Editorial', Georgia, 'Times New Roman', serif;
+  --font-display-alt: 'Presti Display', Georgia, 'Times New Roman', serif;
+  --font-nav: 'Roboto', 'Inter Variable', system-ui, sans-serif;
 
   /* Acentos de categoria */
   --color-accent-social: #e8552d;
