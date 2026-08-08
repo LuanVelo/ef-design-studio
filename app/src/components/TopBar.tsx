@@ -1,51 +1,23 @@
 import { NavLink, useNavigate } from 'react-router-dom'
 import { useSession } from '@auth/session'
+import { Avatar } from './Avatar'
+import { EspindolaLogo } from './EspindolaLogo'
 
-const navItems = [
-  { to: '/templates', label: 'Templates' },
-  { to: '/social', label: 'Social' },
-  { to: '/slides', label: 'Slides & PDF' },
-]
-
+/**
+ * Header mínimo (variante "light" do Figma): logo à esquerda, Logout + avatar
+ * à direita. A navegação entre ferramentas mora na Home (cards de tipo), não
+ * numa nav fixa — decisão de UI de 02/08/2026.
+ */
 export function TopBar() {
   const { user, logout } = useSession()
   const navigate = useNavigate()
   return (
-    <header className="flex items-center justify-between px-6 py-4 sm:px-8">
-      <NavLink to="/" className="flex items-center gap-2">
-        <span
-          aria-hidden="true"
-          className="flex h-7 w-7 items-center justify-center rounded-full bg-ink text-[11px] font-bold text-white"
-        >
-          EF
-        </span>
-        <span className="text-sm font-semibold tracking-tight">EF Design Studio</span>
+    <header className="flex items-center justify-between py-6">
+      <NavLink to="/" aria-label="Início" className="text-brand-body">
+        <EspindolaLogo />
       </NavLink>
 
-      <nav className="flex items-center gap-1" aria-label="Navegação principal">
-        {navItems.map((item) => (
-          <NavLink
-            key={item.to}
-            to={item.to}
-            className={({ isActive }) =>
-              `rounded-full px-4 py-2 text-sm font-medium transition-colors duration-150 ${
-                isActive ? 'bg-ink text-white' : 'text-ink hover:bg-ink/5'
-              }`
-            }
-          >
-            {item.label}
-          </NavLink>
-        ))}
-      </nav>
-
-      <div className="flex items-center gap-2">
-        <span
-          className="flex h-8 w-8 items-center justify-center rounded-full bg-retro-pessego text-xs font-semibold text-ink"
-          aria-label={user ? `Perfil: ${user.username}` : 'Usuário'}
-          title={user?.username}
-        >
-          {user ? user.username.charAt(0).toUpperCase() : '?'}
-        </span>
+      <div className="flex items-center gap-3">
         {user ? (
           <button
             type="button"
@@ -53,11 +25,13 @@ export function TopBar() {
               logout()
               navigate('/login')
             }}
-            className="cursor-pointer rounded-full px-3 py-2 text-sm font-medium text-ink-muted transition-colors hover:bg-ink/5 hover:text-ink"
+            className="cursor-pointer text-base text-brand-body transition-opacity hover:opacity-70"
+            style={{ fontFamily: 'var(--font-nav)' }}
           >
-            Sair
+            Logout
           </button>
         ) : null}
+        <Avatar name={user?.username} size={23} />
       </div>
     </header>
   )

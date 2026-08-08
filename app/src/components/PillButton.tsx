@@ -1,12 +1,14 @@
 import type { ButtonHTMLAttributes } from 'react'
 
 type PillButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
-  variant?: 'primary' | 'ghost'
+  variant?: 'primary' | 'ghost' | 'brand'
 }
 
 const styles = {
   primary: 'bg-ink text-white hover:bg-black',
   ghost: 'border border-ink/15 text-ink hover:bg-ink/5',
+  /** CTA da direção de marca (Login/Home/Tipo selecionado) — pill dourado. */
+  brand: 'bg-brand-gold text-brand-light-text hover:bg-brand-gold-hover text-[length:18px] font-medium px-8 py-3',
 }
 
 export function PillButton({ variant = 'primary', className = '', ...props }: PillButtonProps) {
